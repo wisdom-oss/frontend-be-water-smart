@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BeWaterSmartService } from './be-water-smart.service';
-import { PhysicalMeter, VirtualMeter } from './bws-interfaces';
+import { PhysicalMeter, VirtualMeter, Algorithm } from './bws-interfaces';
 
 @Component({
   selector: 'lib-be-water-smart',
@@ -13,33 +13,35 @@ export class BeWaterSmartComponent implements OnInit {
   // list of physical meter | jsonobjects
   pMeters: PhysicalMeter[] = [];
 
-  // string to filter name of smartMeters
-  physicalMeterString: string = 'urn:ngsi-ld:Device:';
+  // temporary list of PhysicalMeters to add them to a VirtualMeter
+  selectedPhysicalMeters: PhysicalMeter[] = [];
+
+  // name for the new virtual meter
+  newVMeterName: string = "";
 
   // list of virtual meter | jsonobjects
   vMeters: VirtualMeter[] = [];
-  // TODO if vMeter is selected (checkbox) open list of all contained pMeters
-  // TODO add virtual meter creation
+
+  // string to filter name of smartMeters
+  physicalMeterString: string = 'urn:ngsi-ld:Device:';
 
   // string to filter name of virtualMeters
   virtualMeterString: string = 'urn:ngsi-ld:virtualMeter:';
 
-  // physicalMeter searched by id
-  physicalMeter: any;
+  algorithms: Algorithm[] = [];
 
-  // formatting issues
+  // max number of characters per column
   slice: number = 20;
-
-
 
   constructor(public bwsService: BeWaterSmartService) { }
 
   ngOnInit(): void {
     this.extractPMeters();
     this.extractVMeters();
+    this.extractAlgorithms();
   }
 
-  // SmartMeterList Functions
+  // ---------- SmartMeterList Functions ----------
 
   /**
    * extract  physical meters from  database
@@ -57,7 +59,7 @@ export class BeWaterSmartComponent implements OnInit {
     })
   }
 
-  // VirtualMeterList Functions
+  // ---------- VirtualMeterList Functions ----------
 
   /**
    * extract  virtual meters from database
@@ -71,6 +73,39 @@ export class BeWaterSmartComponent implements OnInit {
       },
       error: (error) => {
         console.log(error);
+      },
+    })
+  }
+
+
+  /**
+   * creates a new VMeter with an @input name and the id-list of the selected physical meters.
+   * If successful, user gets informed and all global variables get set back.
+   * If failed, user gets informed 
+   */
+  addVMeter(): void {
+
+    let id_list: string[] = [];
+
+    this.selectedPhysicalMeters.forEach((item) => {
+      id_list.push(item.id);
+    });
+
+    let jsonBody = { submeterIds: id_list };
+
+    this.bwsService.addVirtualMeterWithId(this.newVMeterName, jsonBody).subscribe({
+      next: (response) => {
+        if (response.hasOwnProperty("virtualMeterId")) {
+          alert("Virtual Meter created");
+
+          this.selectedPhysicalMeters = [];
+          this.newVMeterName = "";
+          this.extractVMeters();
+        }
+      },
+      error: (error) => {
+        console.log(error);
+        alert("Something went wrong!");
       },
     })
   }
@@ -96,6 +131,45 @@ export class BeWaterSmartComponent implements OnInit {
     })
   }
 
+  /**
+   * Check if a physicalMeter is selected for creation of a virtual meter
+   * @param item the physicalMeter to be checked
+   * @param event the event from checkbox
+   */
+  toggleSelectedMeter(item: PhysicalMeter, event: Event) {
+
+    const isChecked = (event.target as HTMLInputElement).checked;
+
+    if (isChecked) {
+      this.selectedPhysicalMeters.push(item);
+    } else {
+      const index = this.selectedPhysicalMeters.findIndex(meter => meter.id === item.id);
+      if (index !== -1) {
+        this.selectedPhysicalMeters.splice(index, 1);
+      }
+    }
+  }
+
+  // ---------- Algorithm Functions ----------
+
+  extractAlgorithms(): void {
+    this.bwsService.getAlgorithms().subscribe({
+      next: (response) => {
+        // extracts the meters content immediately, 
+        // so you dont have to do it all the time
+        this.algorithms = response.algorithms;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    })
+  }
+
+
+
+
+  // ---------- Utility Functions ----------
+
   // get the debug message -> check if api is reachable
   getDebugMessage(): void {
     let a = this.bwsService.getDebugMessage();
@@ -107,9 +181,8 @@ export class BeWaterSmartComponent implements OnInit {
         console.error(response);
       }
     })
-  }
 
-  // Formatting Functions
+  }
 
   /**
    * Remove the leading ID to shorten the website representation
@@ -120,6 +193,11 @@ export class BeWaterSmartComponent implements OnInit {
     return value.replace(this.physicalMeterString, '');
   }
 
+  /**
+   Remove the leading ID to shorten the website representation
+   * @param value the string to be transformed
+   * @returns a representation of the string without the leading ID
+   */
   stripVirtualMeterID(value: string): string {
     return value.replace(this.virtualMeterString, '');
   }

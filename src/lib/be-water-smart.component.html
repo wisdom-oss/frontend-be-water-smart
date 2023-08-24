@@ -1,4 +1,11 @@
 <!-- Bulma is globally available. -->
+<style>
+  /* Custom CSS to remove underlining and dotted lines from <abbr> tags */
+  .box abbr {
+    text-decoration: none; /* Remove underlining */
+  }
+</style>
+
 <div class="box">
   <h1>Database List test check</h1>
   <button (click)="getDebugMessage()">TestConnection!</button>
@@ -7,71 +14,90 @@
 
 <div class="box" [style]="{ overflow: pMeters ? 'auto' : 'hidden' }">
   <h1 class="title has-text-centered is-size-3">Smart Meter List</h1>
-
   <!-- Table to show all SmartMeters -->
-  <div class="columns">
-    <div class="column">
-      <table class="table is-hoverable">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Date</th>
-            <th>Country</th>
-            <th>Locality</th>
-            <th>Address</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of pMeters; let i = index">
-            <td class="is-narrow">
-              <label class="checkbox">
-                <input type="checkbox" />
-              </label>
-            </td>
-            <td class="is-narrow">
-              <abbr title="{{ stripSmartMeterID(item.id) }}">
-                {{ stripSmartMeterID(item.id).slice(0, slice) }}
-              </abbr>
-            </td>
-            <td class="is-narrow">
-              <abbr title="{{ formatDateTime(item.date) }}">
-                {{ formatDateTime(item.date).slice(0, slice) }}
-              </abbr>
-            </td>
-            <td class="is-narrow">
-              <abbr title="{{ item.address.addressCountry }}">
-                {{ item.address.addressCountry.slice(0, slice) }}
-              </abbr>
-            </td>
-            <td class="is-narrow">
-              <abbr title="{{ item.address.addressLocality }}">
-                {{ item.address.addressLocality.slice(0, slice) }}
-              </abbr>
-            </td>
-            <td class="is-narrow">
-              <abbr title="{{ item.address.streetAddress }}">
-                {{ item.address.streetAddress.slice(0, slice) }}
-              </abbr>
-            </td>
-            <td class="is-narrow">
-              <abbr title="{{ item.description }}">
-                {{ item.description.slice(0, 20) }}
-              </abbr>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <table class="table is-hoverable">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Date</th>
+        <th>Country</th>
+        <th>Locality</th>
+        <th>Address</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of pMeters; let i = index">
+        <td class="is-narrow">
+          <label class="checkbox">
+            <input
+              type="checkbox"
+              [checked]="selectedPhysicalMeters.includes(item)"
+              (change)="toggleSelectedMeter(item, $event)"
+            />
+          </label>
+        </td>
+        <td>
+          <abbr title="{{ stripSmartMeterID(item.id) }}">
+            {{ stripSmartMeterID(item.id).slice(0, slice) }}
+          </abbr>
+        </td>
+        <td>
+          <abbr title="{{ formatDateTime(item.date) }}">
+            {{ formatDateTime(item.date).slice(0, slice) }}
+          </abbr>
+        </td>
+        <td>
+          <abbr title="{{ item.address.addressCountry }}">
+            {{ item.address.addressCountry.slice(0, slice) }}
+          </abbr>
+        </td>
+        <td>
+          <abbr title="{{ item.address.addressLocality }}">
+            {{ item.address.addressLocality.slice(0, slice) }}
+          </abbr>
+        </td>
+        <td>
+          <abbr title="{{ item.address.streetAddress }}">
+            {{ item.address.streetAddress.slice(0, slice) }}
+          </abbr>
+        </td>
+        <td>
+          <abbr title="{{ item.description }}">
+            {{ item.description.slice(0, 20) }}
+          </abbr>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
-<div class="box" [style]="{ overflow: vMeters ? 'auto' : 'hidden' }">
-  <h1 class="title has-text-centered is-size-3">Virtual Meter List</h1>
+<div class="box">
   <div class="columns">
-    <div class="column">
-      <table class="table is-hoverable is is-fullwidth">
+    <div class="column is-4">
+      <h1 class="title has-text-centered is-size-3">Add Virtual Meter</h1>
+      <div class="field is-grouped">
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            [(ngModel)]="newVMeterName"
+            placeholder="Enter Virtual Meter Name"
+          />
+        </div>
+        <div class="control">
+          <button class="button is-success" (click)="addVMeter()">Add</button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="column is-8"
+      [style]="{ overflow: vMeters ? 'auto' : 'hidden' }"
+    >
+      <h1 class="title has-text-centered is-size-3">Virtual Meter List</h1>
+      <!-- Table to show all VirtualMeters -->
+      <table class="table is-hoverable">
         <thead>
           <tr>
             <th></th>
@@ -100,12 +126,12 @@
                 {{ formatDateTime(item.dateCreated).slice(0, slice) }}
               </abbr>
             </td>
-            <td class="has-text-centered">
+            <td>
               <abbr title="{{ item.submeterIds.length }}">
                 {{ item.submeterIds.length }}
               </abbr>
             </td>
-            <td class="has-text-centered">
+            <td>
               <abbr title="{{ item.supermeterIds.length }}">
                 {{ item.supermeterIds.length }}
               </abbr>
@@ -128,4 +154,40 @@
       </table>
     </div>
   </div>
+</div>
+
+<div class="box">
+  <h1 class="title has-text-centered is-size-3">Model Management</h1>
+  <table class="table is-hoverable">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Estimated Training Time</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of algorithms; let i = index">
+        <td class="is-narrow">
+          <label class="checkbox">
+            <input type="checkbox" />
+          </label>
+        </td>
+        <td>
+          <abbr title="{{ item.name }}">
+            {{ item.name.slice(0, slice) }}
+          </abbr>
+        </td>
+        <td>
+          {{ item.estimatedTrainingTime }}
+        </td>
+        <td>
+          <abbr title="{{ item.description }}">
+            {{ item.description.slice(0, slice) }}
+          </abbr>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

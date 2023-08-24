@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpContext } from "@angular/common/http";
 import { USE_API_URL, USE_LOADER, USE_ERROR_HANDLER } from 'common';
-import { AllPhysicalMeters, AllVirtualMeters, PhysicalMeter, VirtualMeter } from './bws-interfaces';
+import { AllPhysicalMeters, AllVirtualMeters, AllAlgorithms } from './bws-interfaces';
 
 
 
@@ -16,7 +16,7 @@ export class BeWaterSmartService {
   // httpContext with base values
   ctx: HttpContext = new HttpContext()
     .set(USE_API_URL, true)
-    .set(USE_LOADER, false)
+    .set(USE_LOADER, true)
     .set(USE_ERROR_HANDLER, 1);
 
   constructor(private http: HttpClient) { }
@@ -57,10 +57,28 @@ export class BeWaterSmartService {
     })
   }
 
+  addVirtualMeterWithId(id: string, submeters: any) {
+    let url = this.api_prefix + "/virtual-meters?name=" + id;
+
+    return this.http.post(url, submeters, {
+      context: this.ctx,
+      responseType: "json",
+    })
+  }
+
   delVirtualMeterById(input: string) {
     let url = this.api_prefix + "/virtual-meters/" + input
 
     return this.http.delete(url, {
+      context: this.ctx,
+      responseType: "json",
+    })
+  }
+
+  getAlgorithms() {
+    let url = this.api_prefix + "/algorithms";
+
+    return this.http.get<AllAlgorithms>(url, {
       context: this.ctx,
       responseType: "json",
     })

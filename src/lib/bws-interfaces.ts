@@ -28,3 +28,13 @@ export interface VirtualMeter {
 export interface AllVirtualMeters {
     virtualMeters: VirtualMeter[];
 }
+
+export interface Algorithm {
+    description: string;
+    estimatedTrainingTime: number | null;
+    name: string;
+}
+
+export interface AllAlgorithms {
+    algorithms: Algorithm[];
+}
