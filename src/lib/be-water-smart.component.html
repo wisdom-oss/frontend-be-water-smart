@@ -4,6 +4,13 @@
   .box abbr {
     text-decoration: none; /* Remove underlining */
   }
+
+  .table-container thead {
+    position: sticky;
+    top: 0;
+    background-color: white; /* Set the background color you want for the header */
+    z-index: 1; /* Ensure the header stays above the content during scrolling */
+  }
 </style>
 
 <div class="box">
@@ -12,150 +19,161 @@
   <div *ngIf="pMeters"></div>
 </div>
 
-<div class="box" [style]="{ overflow: pMeters ? 'auto' : 'hidden' }">
+<!-- Physical Meter Field-->
+<div class="box" [style]="{ height: heightPM }">
   <h1 class="title has-text-centered is-size-3">Smart Meter List</h1>
-  <!-- Table to show all SmartMeters -->
-  <table class="table is-hoverable">
-    <thead>
-      <tr>
-        <th></th>
-        <th>Name</th>
-        <th>Date</th>
-        <th>Country</th>
-        <th>Locality</th>
-        <th>Address</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of pMeters; let i = index">
-        <td class="is-narrow">
-          <label class="checkbox">
-            <input
-              type="checkbox"
-              [checked]="selectedPhysicalMeters.includes(item)"
-              (change)="toggleSelectedMeter(item, $event)"
-            />
-          </label>
-        </td>
-        <td>
-          <abbr title="{{ stripSmartMeterID(item.id) }}">
-            {{ stripSmartMeterID(item.id).slice(0, slice) }}
-          </abbr>
-        </td>
-        <td>
-          <abbr title="{{ formatDateTime(item.date) }}">
-            {{ formatDateTime(item.date).slice(0, slice) }}
-          </abbr>
-        </td>
-        <td>
-          <abbr title="{{ item.address.addressCountry }}">
-            {{ item.address.addressCountry.slice(0, slice) }}
-          </abbr>
-        </td>
-        <td>
-          <abbr title="{{ item.address.addressLocality }}">
-            {{ item.address.addressLocality.slice(0, slice) }}
-          </abbr>
-        </td>
-        <td>
-          <abbr title="{{ item.address.streetAddress }}">
-            {{ item.address.streetAddress.slice(0, slice) }}
-          </abbr>
-        </td>
-        <td>
-          <abbr title="{{ item.description }}">
-            {{ item.description.slice(0, 20) }}
-          </abbr>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<div class="box">
-  <div class="columns">
-    <div class="column is-4">
-      <h1 class="title has-text-centered is-size-3">Add Virtual Meter</h1>
-      <div class="field is-grouped">
-        <div class="control">
-          <input
-            class="input"
-            type="text"
-            [(ngModel)]="newVMeterName"
-            placeholder="Enter Virtual Meter Name"
-          />
-        </div>
-        <div class="control">
-          <button class="button is-success" (click)="addVMeter()">Add</button>
-        </div>
-      </div>
-    </div>
-    <div
-      class="column is-8"
-      [style]="{ overflow: vMeters ? 'auto' : 'hidden' }"
-    >
-      <h1 class="title has-text-centered is-size-3">Virtual Meter List</h1>
-      <!-- Table to show all VirtualMeters -->
-      <table class="table is-hoverable">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Date</th>
-            <th class="has-text-centered">SubMeter Amount</th>
-            <th class="has-text-centered">SuperMeter Amount</th>
-            <th>Description</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of vMeters; let i = index">
-            <td class="is-narrow">
-              <label class="checkbox">
-                <input type="checkbox" />
-              </label>
-            </td>
-            <td>
-              <abbr title="{{ stripVirtualMeterID(item.id) }}">
-                {{ stripVirtualMeterID(item.id).slice(0, slice) }}
-              </abbr>
-            </td>
-            <td>
-              <abbr title="{{ formatDateTime(item.dateCreated) }}">
-                {{ formatDateTime(item.dateCreated).slice(0, slice) }}
-              </abbr>
-            </td>
-            <td>
-              <abbr title="{{ item.submeterIds.length }}">
-                {{ item.submeterIds.length }}
-              </abbr>
-            </td>
-            <td>
-              <abbr title="{{ item.supermeterIds.length }}">
-                {{ item.supermeterIds.length }}
-              </abbr>
-            </td>
-            <td>
-              <abbr title="{{ item.description }}">
-                {{ item.description.slice(0, slice) }}
-              </abbr>
-            </td>
-            <td class="is-narrow">
-              <button
-                class="button is-danger"
-                (click)="deleteVMeterById(item.id, i)"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div
+    class="table-container"
+    [style]="{ height: heightPMTable, overflow: pMeters ? 'auto' : 'hidden' }"
+  >
+    <table class="table is-hoverable">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Date</th>
+          <th>Country</th>
+          <th>Locality</th>
+          <th>Address</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of pMeters; let i = index">
+          <td class="is-narrow">
+            <label class="checkbox">
+              <input
+                type="checkbox"
+                [checked]="selectedPhysicalMeters.includes(item)"
+                (change)="toggleSelectedMeter(item, $event)"
+              />
+            </label>
+          </td>
+          <td>
+            <abbr title="{{ item.id }}">
+              {{ stripSmartMeterID(item.id) }}
+            </abbr>
+          </td>
+          <td>
+            <abbr title="{{ item.date }}">
+              {{ formatDateTime(item.date).slice(0, slice) }}
+            </abbr>
+          </td>
+          <td>
+            <abbr title="{{ item.address.addressCountry }}">
+              {{ item.address.addressCountry.slice(0, slice) }}
+            </abbr>
+          </td>
+          <td>
+            <abbr title="{{ item.address.addressLocality }}">
+              {{ item.address.addressLocality.slice(0, slice) }}
+            </abbr>
+          </td>
+          <td>
+            <abbr title="{{ item.address.streetAddress }}">
+              {{ item.address.streetAddress.slice(0, slice) }}
+            </abbr>
+          </td>
+          <td>
+            <abbr title="{{ item.description }}">
+              {{ item.description.slice(0, slice) }}
+            </abbr>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
+<!-- Virtual Meter Field-->
+<div class="box" [style]="{ height: heightVM }">
+  <h1 class="title has-text-centered is-size-3">Virtual Meter List</h1>
+  <!-- Table to show all VirtualMeters -->
+  <div class="field is-grouped">
+    <div class="control">
+      <input
+        class="input"
+        type="text"
+        [(ngModel)]="newVMeterName"
+        placeholder="Enter Virtual Meter Name"
+      />
+    </div>
+    <div class="control">
+      <button
+        class="button is-success"
+        [disabled]="!selectedPhysicalMeters.length"
+        (click)="addVMeter()"
+      >
+        <abbr title="Tick a Physical Meter to continue"> Add </abbr>
+      </button>
+    </div>
+  </div>
+  <div
+    class="table-container"
+    [style]="{
+      height: heightVMTable,
+      overflow: vMeters ? 'auto' : 'hidden'
+    }"
+  >
+    <table class="table is-hoverable">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Date</th>
+          <th>SubMeter Amount</th>
+          <th>SuperMeter Amount</th>
+          <th>Description</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of vMeters; let i = index">
+          <td class="is-narrow">
+            <label class="checkbox">
+              <input type="checkbox" />
+            </label>
+          </td>
+          <td>
+            <abbr title="{{ stripVirtualMeterID(item.id) }}">
+              {{ stripVirtualMeterID(item.id).slice(0, slice) }}
+            </abbr>
+          </td>
+          <td>
+            <abbr title="{{ formatDateTime(item.dateCreated) }}">
+              {{ formatDateTime(item.dateCreated).slice(0, slice) }}
+            </abbr>
+          </td>
+          <td>
+            <abbr title="{{ item.submeterIds }}">
+              {{ item.submeterIds.length }}
+            </abbr>
+          </td>
+          <td>
+            <abbr title="{{ item.supermeterIds }}">
+              {{ item.supermeterIds.length }}
+            </abbr>
+          </td>
+          <td>
+            <abbr title="{{ item.description }}">
+              {{ item.description.slice(0, slice) }}
+            </abbr>
+          </td>
+          <td class="is-narrow">
+            <button
+              class="button is-danger"
+              (click)="deleteVMeterById(item.id, i)"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Model Field-->
 <div class="box">
   <h1 class="title has-text-centered is-size-3">Model Management</h1>
   <table class="table is-hoverable">

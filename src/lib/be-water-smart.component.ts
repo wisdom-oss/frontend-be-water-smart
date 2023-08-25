@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { BeWaterSmartService } from './be-water-smart.service';
 import { PhysicalMeter, VirtualMeter, Algorithm } from './bws-interfaces';
 
@@ -9,6 +9,18 @@ import { PhysicalMeter, VirtualMeter, Algorithm } from './bws-interfaces';
   ]
 })
 export class BeWaterSmartComponent implements OnInit {
+
+  tbodyRenderCounter = 0
+  get renderCounter() {
+    return this.tbodyRenderCounter++;
+  }
+  console = console
+
+  heightPM: string = "30vh";
+  heightPMTable: string = this.calcRelBoxHeight(this.heightPM, 0.5);
+
+  heightVM: string = "50vh";
+  heightVMTable: string = this.calcRelBoxHeight(this.heightVM, 0.6);
 
   // list of physical meter | jsonobjects
   pMeters: PhysicalMeter[] = [];
@@ -96,8 +108,6 @@ export class BeWaterSmartComponent implements OnInit {
     this.bwsService.addVirtualMeterWithId(this.newVMeterName, jsonBody).subscribe({
       next: (response) => {
         if (response.hasOwnProperty("virtualMeterId")) {
-          alert("Virtual Meter created");
-
           this.selectedPhysicalMeters = [];
           this.newVMeterName = "";
           this.extractVMeters();
@@ -105,7 +115,6 @@ export class BeWaterSmartComponent implements OnInit {
       },
       error: (error) => {
         console.log(error);
-        alert("Something went wrong!");
       },
     })
   }
@@ -189,8 +198,11 @@ export class BeWaterSmartComponent implements OnInit {
    * @param value the string to be transformed
    * @returns a representation of the string without the leading ID
    */
+  //BUG: called way too often.
   stripSmartMeterID(value: string): string {
-    return value.replace(this.physicalMeterString, '');
+    let a: string = value.replace(this.physicalMeterString, '');
+    console.log(a);
+    return a
   }
 
   /**
@@ -198,16 +210,21 @@ export class BeWaterSmartComponent implements OnInit {
    * @param value the string to be transformed
    * @returns a representation of the string without the leading ID
    */
+  //BUG: called way too often.
   stripVirtualMeterID(value: string): string {
     return value.replace(this.virtualMeterString, '');
   }
+
+
 
   /**
    * revamps the data format in order to improve readability
    * @param input the old date format
    * @returns the easier to read output
    */
+  //BUG: called way too often.
   formatDateTime(input: string): string {
+
     //NOTE remember that this can be slow
     const date = new Date(input);
     const day = ('0' + date.getDate()).slice(-2);
@@ -218,6 +235,18 @@ export class BeWaterSmartComponent implements OnInit {
     const seconds = ('0' + date.getSeconds()).slice(-2);
 
     return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+  }
+
+  /**
+   * calculates the table height dependend on the box height 
+   * @param input the relative height of the box
+   * @param share percentage of the table height
+   * @returns the new table height parameter
+   */
+  calcRelBoxHeight(input: string, share: number): string {
+    let x = parseInt(input);
+    let y = x * share;
+    return y.toString() + "vh";
   }
 
 

@@ -16,7 +16,7 @@ export class BeWaterSmartService {
   // httpContext with base values
   ctx: HttpContext = new HttpContext()
     .set(USE_API_URL, true)
-    .set(USE_LOADER, true)
+    .set(USE_LOADER, false)
     .set(USE_ERROR_HANDLER, 1);
 
   constructor(private http: HttpClient) { }
