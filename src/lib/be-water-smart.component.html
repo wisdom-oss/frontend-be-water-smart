@@ -1,18 +1,4 @@
 <!-- Bulma is globally available. -->
-<style>
-  /* Custom CSS to remove underlining and dotted lines from <abbr> tags */
-  .box abbr {
-    text-decoration: none; /* Remove underlining */
-  }
-
-  .table-container thead {
-    position: sticky;
-    top: 0;
-    background-color: white; /* Set the background color you want for the header */
-    z-index: 1; /* Ensure the header stays above the content during scrolling */
-  }
-</style>
-
 <div class="box">
   <h1>Database List test check</h1>
   <button (click)="getDebugMessage()">TestConnection!</button>
@@ -45,13 +31,13 @@
               <input
                 type="checkbox"
                 [checked]="selectedPhysicalMeters.includes(item)"
-                (change)="toggleSelectedMeter(item, $event)"
+                (change)="toggleSelectedPhysicalMeter(item, $event)"
               />
             </label>
           </td>
           <td>
-            <abbr title="{{ item.id }}">
-              {{ stripSmartMeterID(item.id) }}
+            <abbr title="{{ stripMeterID(item.id) }}">
+              {{ stripMeterID(item.id) }}
             </abbr>
           </td>
           <td>
@@ -88,7 +74,8 @@
 <!-- Virtual Meter Field-->
 <div class="box" [style]="{ height: heightVM }">
   <h1 class="title has-text-centered is-size-3">Virtual Meter List</h1>
-  <!-- Table to show all VirtualMeters -->
+  <!--Form Field for adding Virtual Meter-->
+
   <div class="field is-grouped">
     <div class="control">
       <input
@@ -99,15 +86,17 @@
       />
     </div>
     <div class="control">
+      <!--FIXME add the disable function -->
       <button
         class="button is-success"
-        [disabled]="!selectedPhysicalMeters.length"
         (click)="addVMeter()"
+        [disabled]="!selectedPhysicalMeters.length"
       >
         <abbr title="Tick a Physical Meter to continue"> Add </abbr>
       </button>
     </div>
   </div>
+  <!-- Table to show all VirtualMeters -->
   <div
     class="table-container"
     [style]="{
@@ -131,12 +120,19 @@
         <tr *ngFor="let item of vMeters; let i = index">
           <td class="is-narrow">
             <label class="checkbox">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                [checked]="selectedVirtualMeter === item"
+                [disabled]="
+                  selectedVirtualMeter && selectedVirtualMeter !== item
+                "
+                (change)="toggleSelectedVirtualMeter(item)"
+              />
             </label>
           </td>
           <td>
-            <abbr title="{{ stripVirtualMeterID(item.id) }}">
-              {{ stripVirtualMeterID(item.id).slice(0, slice) }}
+            <abbr title="{{ stripMeterID(item.id) }}">
+              {{ stripMeterID(item.id).slice(0, slice) }}
             </abbr>
           </td>
           <td>
@@ -171,41 +167,75 @@
       </tbody>
     </table>
   </div>
+  <!-- Field for training a model -->
+  <h1 class="title has-text-centered is-size-4">Train A Model</h1>
+  <div class="field is-grouped is-justify-content-center">
+    <div class="control">
+      <div class="select is-fullwidth">
+        <select name="selectedAlgorithm">
+          <option *ngFor="let item of algorithms; let i = index">
+            {{ item.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="control">
+      <button
+        title="Choose an algorithm to train"
+        type="submit"
+        class="button is-info"
+        [disabled]="!selectedVirtualMeter"
+        (click)="trainModel(selectedAlgorithm)"
+      >
+        Train Model
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- Model Field-->
 <div class="box">
   <h1 class="title has-text-centered is-size-3">Model Management</h1>
-  <table class="table is-hoverable">
-    <thead>
-      <tr>
-        <th></th>
-        <th>Name</th>
-        <th>Estimated Training Time</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of algorithms; let i = index">
-        <td class="is-narrow">
-          <label class="checkbox">
-            <input type="checkbox" />
-          </label>
-        </td>
-        <td>
-          <abbr title="{{ item.name }}">
-            {{ item.name.slice(0, slice) }}
-          </abbr>
-        </td>
-        <td>
-          {{ item.estimatedTrainingTime }}
-        </td>
-        <td>
-          <abbr title="{{ item.description }}">
-            {{ item.description.slice(0, slice) }}
-          </abbr>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div
+    class="table-container"
+    [style]="{
+      height: heightVMTable,
+      overflow: vMeters ? 'auto' : 'hidden'
+    }"
+  >
+    <table class="table is-hoverable">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>
+            <abbr title="Estimated Training Time"> EST </abbr>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of algorithms; let i = index">
+          <td class="is-narrow">
+            <label class="checkbox">
+              <input type="checkbox" />
+            </label>
+          </td>
+          <td class="is-narrow">
+            <abbr title="{{ item.name }}">
+              {{ item.name.slice(0, slice) }}
+            </abbr>
+          </td>
+          <td>
+            <abbr title="{{ item.description }}">
+              {{ item.description.slice(0, 160) }}
+            </abbr>
+          </td>
+          <td class="is-narrow">
+            {{ item.estimatedTrainingTime }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

@@ -1,26 +1,31 @@
-import { Component, OnInit, Pipe, PipeTransform } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BeWaterSmartService } from './be-water-smart.service';
 import { PhysicalMeter, VirtualMeter, Algorithm } from './bws-interfaces';
+//import { DropdownModule } from 'primeng/dropdown';
+//NOTE Continue here to use the dropdwon https://primeng.org/dropdown
 
 @Component({
   selector: 'lib-be-water-smart',
   templateUrl: "be-water-smart.component.html",
-  styles: [
+  styleUrls: ['be-water-smart.css'
   ]
 })
 export class BeWaterSmartComponent implements OnInit {
 
-  tbodyRenderCounter = 0
-  get renderCounter() {
-    return this.tbodyRenderCounter++;
-  }
-  console = console
+  // ---------- Layout Parameters ----------
 
+  // max number of characters per column
+  slice: number = 20;
+
+  // box height of physical meters
   heightPM: string = "30vh";
   heightPMTable: string = this.calcRelBoxHeight(this.heightPM, 0.5);
 
-  heightVM: string = "50vh";
-  heightVMTable: string = this.calcRelBoxHeight(this.heightVM, 0.6);
+  // box height of virtual meters
+  heightVM: string = "60vh";
+  heightVMTable: string = this.calcRelBoxHeight(this.heightVM, 0.55);
+
+  // ---------- Physical Meter Parameters ----------
 
   // list of physical meter | jsonobjects
   pMeters: PhysicalMeter[] = [];
@@ -28,22 +33,23 @@ export class BeWaterSmartComponent implements OnInit {
   // temporary list of PhysicalMeters to add them to a VirtualMeter
   selectedPhysicalMeters: PhysicalMeter[] = [];
 
-  // name for the new virtual meter
-  newVMeterName: string = "";
+  // ---------- Virtual Meter Parameters ----------
 
   // list of virtual meter | jsonobjects
   vMeters: VirtualMeter[] = [];
 
-  // string to filter name of smartMeters
-  physicalMeterString: string = 'urn:ngsi-ld:Device:';
+  selectedVirtualMeters: VirtualMeter[] = [];
 
-  // string to filter name of virtualMeters
-  virtualMeterString: string = 'urn:ngsi-ld:virtualMeter:';
+  selectedVirtualMeter: VirtualMeter | undefined;
+
+  // name for the new virtual meter
+  newVMeterName: string = "";
+
+  // ---------- Algorithm Parameters ----------
 
   algorithms: Algorithm[] = [];
 
-  // max number of characters per column
-  slice: number = 20;
+  selectedAlgorithm: Algorithm | undefined;
 
   constructor(public bwsService: BeWaterSmartService) { }
 
@@ -71,6 +77,25 @@ export class BeWaterSmartComponent implements OnInit {
     })
   }
 
+  /**
+ * Check if a physicalMeter is selected for creation of a virtual meter
+ * @param item the physicalMeter to be checked
+ * @param event the event from checkbox
+ */
+  toggleSelectedPhysicalMeter(item: PhysicalMeter, event: Event) {
+
+    const isChecked = (event.target as HTMLInputElement).checked;
+
+    if (isChecked) {
+      this.selectedPhysicalMeters.push(item);
+    } else {
+      const index = this.selectedPhysicalMeters.findIndex(meter => meter.id === item.id);
+      if (index !== -1) {
+        this.selectedPhysicalMeters.splice(index, 1);
+      }
+    }
+  }
+
   // ---------- VirtualMeterList Functions ----------
 
   /**
@@ -87,6 +112,18 @@ export class BeWaterSmartComponent implements OnInit {
         console.log(error);
       },
     })
+  }
+
+  /**
+   * toggle if checkboxes are available or not
+   * @param item the meter currently selected
+   */
+  toggleSelectedVirtualMeter(item: any) {
+    if (this.selectedVirtualMeter === item) {
+      this.selectedVirtualMeter = undefined; // Untick the selected item
+    } else {
+      this.selectedVirtualMeter = item; // Tick the selected item
+    }
   }
 
 
@@ -140,25 +177,6 @@ export class BeWaterSmartComponent implements OnInit {
     })
   }
 
-  /**
-   * Check if a physicalMeter is selected for creation of a virtual meter
-   * @param item the physicalMeter to be checked
-   * @param event the event from checkbox
-   */
-  toggleSelectedMeter(item: PhysicalMeter, event: Event) {
-
-    const isChecked = (event.target as HTMLInputElement).checked;
-
-    if (isChecked) {
-      this.selectedPhysicalMeters.push(item);
-    } else {
-      const index = this.selectedPhysicalMeters.findIndex(meter => meter.id === item.id);
-      if (index !== -1) {
-        this.selectedPhysicalMeters.splice(index, 1);
-      }
-    }
-  }
-
   // ---------- Algorithm Functions ----------
 
   extractAlgorithms(): void {
@@ -173,6 +191,40 @@ export class BeWaterSmartComponent implements OnInit {
       },
     })
   }
+
+  chooseAlgorithm(input: Algorithm): void {
+    this.selectedAlgorithm = input;
+    console.log(this.selectedAlgorithm.name);
+  }
+
+  /**
+   * train one of the Models and retrieve the training data
+   * @param input the name of the chosen algorithm
+   */
+  trainModel(input: Algorithm): void {
+
+    console.log(this.selectedVirtualMeter);
+    console.log(input);
+
+
+    if (this.selectedVirtualMeter) {
+      //NOTE item.name in html is undefined
+      this.bwsService.putTrainModel(this.selectedVirtualMeter, input).subscribe({
+        next: (response) => {
+          console.log("Works!");
+        },
+        error: (error) => {
+          console.log(error);
+        },
+      })
+    } else {
+      console.log("No Virtual Meter detected!");
+    }
+
+
+
+  }
+
 
 
 
@@ -194,35 +246,29 @@ export class BeWaterSmartComponent implements OnInit {
   }
 
   /**
-   * Remove the leading ID to shorten the website representation
-   * @param value the string to be transformed
-   * @returns a representation of the string without the leading ID
+   * strip value for better clarification
+   * @param value name of the meter
+   * @returns final name string
    */
-  //BUG: called way too often.
-  stripSmartMeterID(value: string): string {
-    let a: string = value.replace(this.physicalMeterString, '');
-    console.log(a);
-    return a
+  //BUG: called way too often. -> Table is-hoverable
+  stripMeterID(value: string): string {
+    if (value.includes('urn:ngsi-ld:Device:')) {
+      return value.replace('urn:ngsi-ld:Device:', '')
+    }
+
+    if (value.includes('urn:ngsi-ld:virtualMeter:')) {
+      return value.replace('urn:ngsi-ld:virtualMeter:', '')
+    }
+
+    return 'String not found';
   }
-
-  /**
-   Remove the leading ID to shorten the website representation
-   * @param value the string to be transformed
-   * @returns a representation of the string without the leading ID
-   */
-  //BUG: called way too often.
-  stripVirtualMeterID(value: string): string {
-    return value.replace(this.virtualMeterString, '');
-  }
-
-
 
   /**
    * revamps the data format in order to improve readability
    * @param input the old date format
    * @returns the easier to read output
    */
-  //BUG: called way too often.
+  //BUG: called way too often. -> Table is-hoverable
   formatDateTime(input: string): string {
 
     //NOTE remember that this can be slow
@@ -248,9 +294,5 @@ export class BeWaterSmartComponent implements OnInit {
     let y = x * share;
     return y.toString() + "vh";
   }
-
-
-
-
 
 }

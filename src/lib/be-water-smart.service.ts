@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpContext } from "@angular/common/http";
 import { USE_API_URL, USE_LOADER, USE_ERROR_HANDLER } from 'common';
-import { AllPhysicalMeters, AllVirtualMeters, AllAlgorithms } from './bws-interfaces';
+import { AllPhysicalMeters, AllVirtualMeters, AllAlgorithms, VirtualMeter } from './bws-interfaces';
 
 
 
@@ -79,6 +79,21 @@ export class BeWaterSmartService {
     let url = this.api_prefix + "/algorithms";
 
     return this.http.get<AllAlgorithms>(url, {
+      context: this.ctx,
+      responseType: "json",
+    })
+  }
+
+  putTrainModel(meter: VirtualMeter, input: Algorithm) {
+    let virt = meter.id.toString();
+    let alg = input.name.toString();
+
+    let url = this.api_prefix + "/meters/" + virt + "/models/" + alg;
+
+    console.log(url);
+
+    // TODO add interface
+    return this.http.get(url, {
       context: this.ctx,
       responseType: "json",
     })
