@@ -36,3 +36,56 @@ export interface Algorithm {
 export interface AllAlgorithms {
     algorithms: Algorithm[];
 }
+
+export interface MLModel {
+    algorithm: string;
+    comment: string;
+    dateCreated: string;
+    dateModified: string;
+    description: string;
+    evaluation: {
+        actualTestConsumption: number[],
+        metrics: {
+            mape: number,
+            mse: number,
+            rmse: number,
+            smape: number
+        };
+        predictedTestConsumption: number[];
+        testCovariates: {
+            day: number[],
+            is_holiday: number[],
+            is_weekend: number[],
+            month: number[],
+            //TODO check if this is correct precipitation_mm
+            precipitation_mm: number[],
+            year: number[]
+        };
+        testTimestamps: number[]
+    };
+    hyperparameters: {
+        country_holidays: string,
+        daily_seasonality: number,
+        weekly_seasonality: number,
+        yearly_seasonality: number
+    };
+    id: string;
+    inputAttributes: [
+        waterConsumption: string,
+        day: string,
+        month: string,
+        year: string,
+        is_weekend: string,
+        is_holiday: string,
+        // precipitation (mm) original
+        precipitation_mm: string
+    ];
+    isDefault: boolean;
+    isModelValid: boolean;
+    mlFramework: string;
+    refMeter: string;
+}
+
+export interface AllModels {
+    MLModels: MLModel[];
+}

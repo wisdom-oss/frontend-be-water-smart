@@ -1,4 +1,6 @@
 <!-- Bulma is globally available. -->
+
+<!-- debug check -->
 <div class="box">
   <h1>Database List test check</h1>
   <button (click)="getDebugMessage()">TestConnection!</button>
@@ -75,7 +77,6 @@
 <div class="box" [style]="{ height: heightVM }">
   <h1 class="title has-text-centered is-size-3">Virtual Meter List</h1>
   <!--Form Field for adding Virtual Meter-->
-
   <div class="field is-grouped">
     <div class="control">
       <input
@@ -168,12 +169,26 @@
     </table>
   </div>
   <!-- Field for training a model -->
-  <h1 class="title has-text-centered is-size-4">Train A Model</h1>
+  <h1 class="title has-text-centered is-size-4">Model Training</h1>
   <div class="field is-grouped is-justify-content-center">
     <div class="control">
+      <!-- Add the input field for comments here -->
+      <input
+        type="text"
+        class="input"
+        placeholder="Add a comment"
+        [(ngModel)]="modelComment"
+      />
+    </div>
+    <div class="control">
       <div class="select is-fullwidth">
-        <select name="selectedAlgorithm">
-          <option *ngFor="let item of algorithms; let i = index">
+        <select name="selectedAlgorithm" [(ngModel)]="selectedAlgorithm">
+          <option value="">--Please choose an option--</option>
+          <option
+            *ngFor="let item of algorithms; let i = index"
+            [ngValue]="item"
+            [title]="item.description"
+          >
             {{ item.name }}
           </option>
         </select>
@@ -185,9 +200,9 @@
         type="submit"
         class="button is-info"
         [disabled]="!selectedVirtualMeter"
-        (click)="trainModel(selectedAlgorithm)"
+        (click)="trainModel()"
       >
-        Train Model
+        Train
       </button>
     </div>
   </div>
@@ -195,44 +210,50 @@
 
 <!-- Model Field-->
 <div class="box">
-  <h1 class="title has-text-centered is-size-3">Model Management</h1>
+  <h1 class="title has-text-centered is-size-3">Trained Models</h1>
   <div
     class="table-container"
     [style]="{
-      height: heightVMTable,
-      overflow: vMeters ? 'auto' : 'hidden'
+      height: heightModelTable,
+      overflow: models ? 'auto' : 'hidden'
     }"
   >
     <table class="table is-hoverable">
       <thead>
         <tr>
           <th></th>
-          <th>Name</th>
-          <th>Description</th>
-          <th>
-            <abbr title="Estimated Training Time"> EST </abbr>
-          </th>
+          <th>Used Algorithm</th>
+          <th>Comment</th>
+          <th>Trained Virtual Meter</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of algorithms; let i = index">
+        <tr *ngFor="let item of models; let i = index">
           <td class="is-narrow">
             <label class="checkbox">
               <input type="checkbox" />
             </label>
           </td>
           <td class="is-narrow">
-            <abbr title="{{ item.name }}">
-              {{ item.name.slice(0, slice) }}
+            <abbr title="{{ item.algorithm }}">
+              {{ item.algorithm.slice(0, slice) }}
             </abbr>
           </td>
           <td>
-            <abbr title="{{ item.description }}">
-              {{ item.description.slice(0, 160) }}
+            <abbr title="{{ item.comment }}">
+              {{ item.comment.slice(0, 80) }}
             </abbr>
           </td>
-          <td class="is-narrow">
-            {{ item.estimatedTrainingTime }}
+          <td>
+            {{ item.refMeter }}
+          </td>
+          <td>
+            <button
+              class="button is-danger"
+              (click)="deleteModel(item.refMeter, item.algorithm, i)"
+            >
+              Delete
+            </button>
           </td>
         </tr>
       </tbody>

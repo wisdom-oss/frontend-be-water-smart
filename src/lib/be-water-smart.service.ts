@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpContext } from "@angular/common/http";
 import { USE_API_URL, USE_LOADER, USE_ERROR_HANDLER } from 'common';
-import { AllPhysicalMeters, AllVirtualMeters, AllAlgorithms, VirtualMeter } from './bws-interfaces';
+import { AllPhysicalMeters, AllVirtualMeters, AllAlgorithms, AllModels, VirtualMeter } from './bws-interfaces';
 
 
 
@@ -11,7 +11,7 @@ import { AllPhysicalMeters, AllVirtualMeters, AllAlgorithms, VirtualMeter } from
 export class BeWaterSmartService {
 
   // the prefix to use in order to reach the BeWaterSmart api
-  api_prefix = "bws/";
+  api_prefix = "bws";
 
   // httpContext with base values
   ctx: HttpContext = new HttpContext()
@@ -23,6 +23,8 @@ export class BeWaterSmartService {
 
   getDebugMessage() {
     let url = this.api_prefix + "/debug";
+
+    console.log(url);
 
     return this.http.get(url, {
       responseType: "json",
@@ -78,22 +80,55 @@ export class BeWaterSmartService {
   getAlgorithms() {
     let url = this.api_prefix + "/algorithms";
 
+
     return this.http.get<AllAlgorithms>(url, {
       context: this.ctx,
       responseType: "json",
     })
   }
 
-  putTrainModel(meter: VirtualMeter, input: Algorithm) {
+  putTrainModel(meter: VirtualMeter, input: Algorithm, comment?: string) {
     let virt = meter.id.toString();
     let alg = input.name.toString();
 
-    let url = this.api_prefix + "/meters/" + virt + "/models/" + alg;
+    //FIXME added api/ because put wont get resolved in load injector
+    let url = "api/" + this.api_prefix + "/meters/" + virt + "/models/" + alg;
+
+    //FIXME comment not get added
+    if (comment) {
+      url = url + "?" + comment;
+    }
+
+
+    let newCtx = new HttpContext()
+      .set(USE_API_URL, true)
+      .set(USE_LOADER, true)
+      .set(USE_ERROR_HANDLER, 1);
+
+    // TODO add interface
+    return this.http.put(url, {
+      context: newCtx,
+      responseType: "json",
+    })
+  }
+
+  getModels() {
+    let url = this.api_prefix + "/models";
+
+    return this.http.get<AllModels>(url, {
+      context: this.ctx,
+      responseType: "json",
+    })
+  }
+
+  delModel(meter: string, alg: string) {
+
+    //fix Url
+    let url = "api/" + this.api_prefix + "/models/" + meter + ":MLModel:" + alg;
 
     console.log(url);
 
-    // TODO add interface
-    return this.http.get(url, {
+    return this.http.delete(url, {
       context: this.ctx,
       responseType: "json",
     })

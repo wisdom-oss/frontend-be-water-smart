@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BeWaterSmartService } from './be-water-smart.service';
-import { PhysicalMeter, VirtualMeter, Algorithm } from './bws-interfaces';
-//import { DropdownModule } from 'primeng/dropdown';
-//NOTE Continue here to use the dropdwon https://primeng.org/dropdown
+import { PhysicalMeter, VirtualMeter, Algorithm, MLModel } from './bws-interfaces';
 
 @Component({
   selector: 'lib-be-water-smart',
@@ -24,6 +22,13 @@ export class BeWaterSmartComponent implements OnInit {
   // box height of virtual meters
   heightVM: string = "60vh";
   heightVMTable: string = this.calcRelBoxHeight(this.heightVM, 0.55);
+
+  heightAlg: string = "65vh";
+  heightAlgTable: string = this.calcRelBoxHeight(this.heightAlg, 0.7);
+
+  heightModel: string = "30vh";
+  heightModelTable: string = this.calcRelBoxHeight(this.heightModel, 0.7);
+
 
   // ---------- Physical Meter Parameters ----------
 
@@ -51,12 +56,19 @@ export class BeWaterSmartComponent implements OnInit {
 
   selectedAlgorithm: Algorithm | undefined;
 
+  models: MLModel[] = [];
+
+  selectedModel: MLModel | undefined;
+
+  modelComment: string | undefined;
+
   constructor(public bwsService: BeWaterSmartService) { }
 
   ngOnInit(): void {
     this.extractPMeters();
     this.extractVMeters();
     this.extractAlgorithms();
+    this.extractModels();
   }
 
   // ---------- SmartMeterList Functions ----------
@@ -169,6 +181,7 @@ export class BeWaterSmartComponent implements OnInit {
         } else {
           alert("Virtual Meter with Name: " + id + " deleted!")
           this.vMeters.splice(index, 1);
+          this.selectedVirtualMeter = undefined;
         }
       },
       error: (error) => {
@@ -199,30 +212,78 @@ export class BeWaterSmartComponent implements OnInit {
 
   /**
    * train one of the Models and retrieve the training data
-   * @param input the name of the chosen algorithm
    */
-  trainModel(input: Algorithm): void {
+  trainModel(): void {
 
-    console.log(this.selectedVirtualMeter);
-    console.log(input);
-
-
-    if (this.selectedVirtualMeter) {
-      //NOTE item.name in html is undefined
-      this.bwsService.putTrainModel(this.selectedVirtualMeter, input).subscribe({
-        next: (response) => {
-          console.log("Works!");
-        },
-        error: (error) => {
-          console.log(error);
-        },
-      })
-    } else {
+    if (!this.selectedVirtualMeter) {
       console.log("No Virtual Meter detected!");
+      return;
     }
 
+    if (!this.selectedAlgorithm) {
+      console.log("No algorithm detected!");
+      return;
+    }
+
+    if (!this.modelComment) {
+      console.log("a comment is necessary!");
+      alert("a comment is necessary!");
+      return;
+    }
+
+    this.bwsService.putTrainModel(this.selectedVirtualMeter, this.selectedAlgorithm, this.modelComment).subscribe({
+      next: (response) => {
+        this.selectedVirtualMeter = undefined;
+        this.selectedAlgorithm = undefined;
+        this.extractModels();
+        console.log(response);
+        this.modelComment = '';
+
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    })
+  }
+
+  /**
+   * get all trained Models back
+   */
+  extractModels(): void {
+    this.bwsService.getModels().subscribe({
+      next: (response) => {
+        this.models = response.MLModels;
+        console.log(response);
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    })
+  }
 
 
+  deleteModel(vMeterId: string, algId: string, index: number): void {
+
+    console.log(vMeterId);
+    console.log(algId);
+    console.log(index);
+
+
+
+
+    this.bwsService.delModel(vMeterId, algId).subscribe({
+      next: (response) => {
+        if (response.hasOwnProperty('message')) {
+          alert("Model to delete not found");
+        } else {
+          this.models.splice(index, 1);
+          alert("Model deleted!");
+        }
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    })
   }
 
 
@@ -250,8 +311,8 @@ export class BeWaterSmartComponent implements OnInit {
    * @param value name of the meter
    * @returns final name string
    */
-  //BUG: called way too often. -> Table is-hoverable
   stripMeterID(value: string): string {
+    //BUG: called way too often. -> Table is-hoverable
     if (value.includes('urn:ngsi-ld:Device:')) {
       return value.replace('urn:ngsi-ld:Device:', '')
     }
@@ -268,9 +329,8 @@ export class BeWaterSmartComponent implements OnInit {
    * @param input the old date format
    * @returns the easier to read output
    */
-  //BUG: called way too often. -> Table is-hoverable
   formatDateTime(input: string): string {
-
+    //BUG: called way too often. -> Table is-hoverable
     //NOTE remember that this can be slow
     const date = new Date(input);
     const day = ('0' + date.getDate()).slice(-2);
