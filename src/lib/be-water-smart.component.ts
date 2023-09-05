@@ -226,7 +226,6 @@ export class BeWaterSmartComponent implements OnInit {
     }
 
     if (!this.modelComment) {
-      console.log("a comment is necessary!");
       alert("a comment is necessary!");
       return;
     }
@@ -235,10 +234,9 @@ export class BeWaterSmartComponent implements OnInit {
       next: (response) => {
         this.selectedVirtualMeter = undefined;
         this.selectedAlgorithm = undefined;
+        this.modelComment = '';
         this.extractModels();
         console.log(response);
-        this.modelComment = '';
-
       },
       error: (error) => {
         console.log(error);
@@ -268,9 +266,6 @@ export class BeWaterSmartComponent implements OnInit {
     console.log(algId);
     console.log(index);
 
-
-
-
     this.bwsService.delModel(vMeterId, algId).subscribe({
       next: (response) => {
         if (response.hasOwnProperty('message')) {
@@ -286,6 +281,38 @@ export class BeWaterSmartComponent implements OnInit {
     })
   }
 
+
+  // ---------- Forecast Creation -----------
+
+  getForecast(): void {
+
+    let vMeterId = "urn:ngsi-ld:virtualMeter:Test7";
+    let algId = "Prophet";
+
+    if (!vMeterId) {
+      alert("No Virtual Meter detected");
+      return;
+    }
+
+    if (!algId) {
+      alert("No algorithm chosen!");
+      return;
+    }
+
+    this.bwsService.getCreateForecast(vMeterId, algId).subscribe({
+      next: (response) => {
+        if (response.hasOwnProperty('msg')) {
+          alert("Something wrong with query!");
+        } else {
+          console.log(response);
+        }
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    })
+
+  }
 
 
 

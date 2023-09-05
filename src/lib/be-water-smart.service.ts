@@ -106,7 +106,7 @@ export class BeWaterSmartService {
       .set(USE_ERROR_HANDLER, 1);
 
     // TODO add interface
-    return this.http.put(url, {
+    return this.http.put<AllModels>(url, {
       context: newCtx,
       responseType: "json",
     })
@@ -124,11 +124,18 @@ export class BeWaterSmartService {
   delModel(meter: string, alg: string) {
 
     //fix Url
-    let url = "api/" + this.api_prefix + "/models/" + meter + ":MLModel:" + alg;
-
-    console.log(url);
+    let url = this.api_prefix + "/models/" + meter + ":MLModel:" + alg;
 
     return this.http.delete(url, {
+      context: this.ctx,
+      responseType: "json",
+    })
+  }
+
+  getCreateForecast(meterId: string, alg: string) {
+    let url = this.api_prefix + "/meters/" + meterId + "/forecast" + "?algorithm=" + alg
+
+    return this.http.get(url, {
       context: this.ctx,
       responseType: "json",
     })
