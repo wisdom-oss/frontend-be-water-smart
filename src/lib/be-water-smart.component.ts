@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BeWaterSmartService } from './be-water-smart.service';
-import { PhysicalMeter, VirtualMeter, Algorithm, MLModel, ForeCast } from './bws-interfaces';
+import { PhysicalMeter, VirtualMeter, Algorithm, MLModel } from './bws-interfaces';
 import Chart from 'chart.js/auto';
 
 @Component({
@@ -71,8 +71,7 @@ export class BeWaterSmartComponent implements OnInit {
 
   chart: any; // Chart.js chart instance
 
-  timestampArray: string[] = [];
-  valueArray: number[] = [];
+  dataAvailable: boolean = false;
 
   constructor(public bwsService: BeWaterSmartService) { }
 
@@ -81,6 +80,7 @@ export class BeWaterSmartComponent implements OnInit {
     this.extractVMeters();
     this.extractAlgorithms();
     this.extractModels();
+    this.createForecastGraph();
   }
 
   // ---------- SmartMeterList Functions ----------
@@ -219,7 +219,6 @@ export class BeWaterSmartComponent implements OnInit {
 
   chooseAlgorithm(input: Algorithm): void {
     this.selectedAlgorithm = input;
-    console.log(this.selectedAlgorithm.name);
   }
 
   /**
@@ -244,10 +243,13 @@ export class BeWaterSmartComponent implements OnInit {
 
     this.bwsService.putTrainModel(this.selectedVirtualMeter, this.selectedAlgorithm, this.modelComment).subscribe({
       next: (response) => {
-        this.selectedVirtualMeter = undefined;
+
+        this.extractModels();
+
+        this.toggleSelectedVirtualMeter;
         this.selectedAlgorithm = undefined;
         this.modelComment = '';
-        this.extractModels();
+
         console.log(response);
       },
       error: (error) => {
@@ -268,6 +270,14 @@ export class BeWaterSmartComponent implements OnInit {
         console.log(error);
       },
     })
+  }
+
+  toggleSelectedModel(item: any) {
+    if (this.selectedModel === item) {
+      this.selectedModel = undefined; // Untick the selected item
+    } else {
+      this.selectedModel = item; // Tick the selected item
+    }
   }
 
 
@@ -291,20 +301,19 @@ export class BeWaterSmartComponent implements OnInit {
 
   // ---------- Forecast Creation -----------
 
+  /**
+   * create forecast by receiving data from api and displaying it in a graph
+   * @returns if a value for the api request is missing
+   */
   getForecast(): void {
 
-    let vMeterId = "urn:ngsi-ld:virtualMeter:Test7";
-    let algId = "Prophet";
-
-    if (!vMeterId) {
-      alert("No Virtual Meter detected");
+    if (!this.selectedModel) {
+      alert("No model chosen");
       return;
     }
 
-    if (!algId) {
-      alert("No algorithm chosen!");
-      return;
-    }
+    let vMeterId = this.selectedModel.refMeter;
+    let algId = this.selectedModel.algorithm;
 
     this.bwsService.getCreateForecast(vMeterId, algId).subscribe({
       next: (response) => {
@@ -312,12 +321,17 @@ export class BeWaterSmartComponent implements OnInit {
           console.log(response);
         } else {
 
-          let data: ForeCast[] = response;
+          let timestamps = this.formatDateTimeGraph(response.map((item) => item.datePredicted));
+          let predValues = response.map((item) => item.numValue);
 
-          this.timestampArray = data.map((item) => item.datePredicted);
-          this.valueArray = data.map((item) => item.numValue);
+          let date = this.stripDate(response[0].datePredicted);
 
-          this.createForecastGraph(this.timestampArray, this.valueArray);
+          this.dataAvailable = true;
+
+          this.createForecastGraph(timestamps, predValues, date);
+
+          //this.toggleSelectedVirtualMeter;
+          this.toggleSelectedModel;
 
         }
       },
@@ -327,30 +341,55 @@ export class BeWaterSmartComponent implements OnInit {
     })
   }
 
-  createForecastGraph(xAxis: string[], yAxis: number[]): void {
+  /**
+   * creates a graph from api
+   * @param xAxis timestamps out of json body
+   * @param yAxis predicted values out of json body
+   * @param date of the day displayed
+   */
+  createForecastGraph(xAxis?: string[], yAxis?: number[], date?: string): void {
+
+    if (this.chart) {
+      this.chart.destroy();
+    }
+
+    let standardTimes: string[] = ['01:00:00', '02:00:00', '03:00:00',
+      '04:00:00', '05:00:00', '06:00:00', '07:00:00',
+      '08:00:00', '09:00:00', '10:00:00', '11:00:00',
+      '12:00:00', '13:00:00', '14:00:00', '15:00:00',
+      '16:00:00', '17:00:00', '18:00:00', '19:00:00',
+      '20:00:00', '21:00:00', '22:00:00', '23:00:00']
 
     const ctx = document.getElementById('lineChart') as HTMLCanvasElement;
     this.chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: xAxis,
+        labels: this.dataAvailable ? xAxis : standardTimes,
         datasets: [
           {
-            label: 'Cubic Meters',
-            data: yAxis,
+            label: date,
+            data: this.dataAvailable ? yAxis : [],
             borderColor: 'blue',
             backgroundColor: 'rgba(0,0,255,0.2)',
-          },
-          {
-            label: 'Attribute 2',
-            data: [5, 15, 25, 35, 45],
-            borderColor: 'green',
-            backgroundColor: 'rgba(0,255,0,0.2)',
           },
         ],
       },
       options: {
         responsive: true,
+        scales: {
+          y: {
+            title: {
+              display: true,
+              text: 'm^3'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'time'
+            }
+          }
+        }
       },
     });
   }
@@ -409,6 +448,39 @@ export class BeWaterSmartComponent implements OnInit {
     const seconds = ('0' + date.getSeconds()).slice(-2);
 
     return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+  }
+
+  /**
+   * format the array to only contain timestamps and no datetime
+   * @param input string array with the contained datetime
+   * @returns string array without the date
+   */
+  formatDateTimeGraph(input: string[]): string[] {
+
+    let newTimes: string[] = [];
+
+    input.forEach(item => {
+      const date = new Date(item);
+      const hours = ('0' + date.getHours()).slice(-2);
+      const minutes = ('0' + date.getMinutes()).slice(-2);
+      const seconds = ('0' + date.getSeconds()).slice(-2);
+
+      let finalTime = `${hours}:${minutes}:${seconds}`;
+
+      newTimes.push(finalTime);
+    });
+
+    return newTimes
+  }
+
+  stripDate(input: string): string {
+    const date = new Date(input);
+    const day = ('0' + date.getDate()).slice(-2);
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const year = date.getFullYear();
+
+    return `${day}.${month}.${year}`
+
   }
 
   /**

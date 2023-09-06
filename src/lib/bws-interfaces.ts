@@ -107,7 +107,3 @@ export interface ForeCast {
     type: string;
     unit: string;
 }
-
-export interface AllForeCast {
-    data: ForeCast[];
-}

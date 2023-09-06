@@ -231,7 +231,12 @@
         <tr *ngFor="let item of models; let i = index">
           <td class="is-narrow">
             <label class="checkbox">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                [checked]="selectedModel === item"
+                [disabled]="selectedModel && selectedModel !== item"
+                (change)="toggleSelectedModel(item)"
+              />
             </label>
           </td>
           <td class="is-narrow">
@@ -263,7 +268,7 @@
 
 <!-- ForeCast Creation -->
 <div class="box" [style]="{ height: heightForecast }">
-  <h1 class="title has-text-centered is-size-3">Forecast Creation</h1>
+  <h1 class="title has-text-centered is-size-3">Predicted Water Consumption</h1>
   <button class="button is-info" (click)="getForecast()">
     Create forecast
   </button>

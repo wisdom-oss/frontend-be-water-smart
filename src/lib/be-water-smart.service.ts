@@ -95,20 +95,12 @@ export class BeWaterSmartService {
     //FIXME added api/ because put wont get resolved in load injector
     let url = "api/" + this.api_prefix + "/meters/" + virt + "/models/" + alg;
 
-    //FIXME comment not get added
     if (comment) {
-      url = url + "?" + comment;
+      url = url + "?comment=" + comment;
     }
 
-
-    let newCtx = new HttpContext()
-      .set(USE_API_URL, true)
-      .set(USE_LOADER, true)
-      .set(USE_ERROR_HANDLER, 1);
-
-    // TODO add interface
     return this.http.put<AllModels>(url, {
-      context: newCtx,
+      context: this.ctx,
       responseType: "json",
     })
   }
