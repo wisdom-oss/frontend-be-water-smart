@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpContext } from "@angular/common/http";
 import { USE_API_URL, USE_LOADER, USE_ERROR_HANDLER } from 'common';
-import { AllPhysicalMeters, AllVirtualMeters, AllAlgorithms, AllModels, VirtualMeter } from './bws-interfaces';
+import { AllPhysicalMeters, AllVirtualMeters, AllAlgorithms, AllModels, VirtualMeter, ForeCast } from './bws-interfaces';
+import { Observable } from 'rxjs';
 
 
 
@@ -132,10 +133,10 @@ export class BeWaterSmartService {
     })
   }
 
-  getCreateForecast(meterId: string, alg: string) {
+  getCreateForecast(meterId: string, alg: string): Observable<ForeCast[]> {
     let url = this.api_prefix + "/meters/" + meterId + "/forecast" + "?algorithm=" + alg
 
-    return this.http.get(url, {
+    return this.http.get<ForeCast[]>(url, {
       context: this.ctx,
       responseType: "json",
     })

@@ -89,3 +89,25 @@ export interface MLModel {
 export interface AllModels {
     MLModels: MLModel[];
 }
+
+export interface ForeCast {
+    covariateValues: {
+        day: number;
+        is_holiday: number;
+        is_weekend: number;
+        month: number;
+        "precipitation (mm)": number;
+        year: number;
+    };
+    datePredicted: string;
+    histRefValues: Record<string, any>; // This represents an empty object {}
+    id: string;
+    numValue: number;
+    refDevice: string;
+    type: string;
+    unit: string;
+}
+
+export interface AllForeCast {
+    data: ForeCast[];
+}

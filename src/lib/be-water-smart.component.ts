@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BeWaterSmartService } from './be-water-smart.service';
-import { PhysicalMeter, VirtualMeter, Algorithm, MLModel } from './bws-interfaces';
+import { PhysicalMeter, VirtualMeter, Algorithm, MLModel, ForeCast } from './bws-interfaces';
+import Chart from 'chart.js/auto';
 
 @Component({
   selector: 'lib-be-water-smart',
@@ -28,6 +29,10 @@ export class BeWaterSmartComponent implements OnInit {
 
   heightModel: string = "30vh";
   heightModelTable: string = this.calcRelBoxHeight(this.heightModel, 0.7);
+
+  heightForecast: string = "90vh";
+  heightForecastGraph: string = this.calcRelBoxHeight(this.heightModel, 0.8);
+
 
 
   // ---------- Physical Meter Parameters ----------
@@ -61,6 +66,13 @@ export class BeWaterSmartComponent implements OnInit {
   selectedModel: MLModel | undefined;
 
   modelComment: string | undefined;
+
+  // ---------- Forecast Parameters ----------
+
+  chart: any; // Chart.js chart instance
+
+  timestampArray: string[] = [];
+  valueArray: number[] = [];
 
   constructor(public bwsService: BeWaterSmartService) { }
 
@@ -251,7 +263,6 @@ export class BeWaterSmartComponent implements OnInit {
     this.bwsService.getModels().subscribe({
       next: (response) => {
         this.models = response.MLModels;
-        console.log(response);
       },
       error: (error) => {
         console.log(error);
@@ -261,10 +272,6 @@ export class BeWaterSmartComponent implements OnInit {
 
 
   deleteModel(vMeterId: string, algId: string, index: number): void {
-
-    console.log(vMeterId);
-    console.log(algId);
-    console.log(index);
 
     this.bwsService.delModel(vMeterId, algId).subscribe({
       next: (response) => {
@@ -302,16 +309,50 @@ export class BeWaterSmartComponent implements OnInit {
     this.bwsService.getCreateForecast(vMeterId, algId).subscribe({
       next: (response) => {
         if (response.hasOwnProperty('msg')) {
-          alert("Something wrong with query!");
-        } else {
           console.log(response);
+        } else {
+
+          let data: ForeCast[] = response;
+
+          this.timestampArray = data.map((item) => item.datePredicted);
+          this.valueArray = data.map((item) => item.numValue);
+
+          this.createForecastGraph(this.timestampArray, this.valueArray);
+
         }
       },
       error: (error) => {
         console.log(error);
       },
     })
+  }
 
+  createForecastGraph(xAxis: string[], yAxis: number[]): void {
+
+    const ctx = document.getElementById('lineChart') as HTMLCanvasElement;
+    this.chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: xAxis,
+        datasets: [
+          {
+            label: 'Cubic Meters',
+            data: yAxis,
+            borderColor: 'blue',
+            backgroundColor: 'rgba(0,0,255,0.2)',
+          },
+          {
+            label: 'Attribute 2',
+            data: [5, 15, 25, 35, 45],
+            borderColor: 'green',
+            backgroundColor: 'rgba(0,255,0,0.2)',
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+      },
+    });
   }
 
 
