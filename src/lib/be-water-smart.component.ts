@@ -83,7 +83,7 @@ export class BeWaterSmartComponent implements OnInit {
     this.createForecastGraph();
   }
 
-  // ---------- SmartMeterList Functions ----------
+  // ---------- Extracting Functions ----------
 
   /**
    * extract  physical meters from  database
@@ -102,27 +102,6 @@ export class BeWaterSmartComponent implements OnInit {
   }
 
   /**
- * Check if a physicalMeter is selected for creation of a virtual meter
- * @param item the physicalMeter to be checked
- * @param event the event from checkbox
- */
-  toggleSelectedPhysicalMeter(item: PhysicalMeter, event: Event) {
-
-    const isChecked = (event.target as HTMLInputElement).checked;
-
-    if (isChecked) {
-      this.selectedPhysicalMeters.push(item);
-    } else {
-      const index = this.selectedPhysicalMeters.findIndex(meter => meter.id === item.id);
-      if (index !== -1) {
-        this.selectedPhysicalMeters.splice(index, 1);
-      }
-    }
-  }
-
-  // ---------- VirtualMeterList Functions ----------
-
-  /**
    * extract  virtual meters from database
    */
   extractVMeters(): void {
@@ -138,10 +117,60 @@ export class BeWaterSmartComponent implements OnInit {
     })
   }
 
+  extractAlgorithms(): void {
+    this.bwsService.getAlgorithms().subscribe({
+      next: (response) => {
+        // extracts the meters content immediately, 
+        // so you dont have to do it all the time
+        this.algorithms = response.algorithms;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    })
+  }
+
   /**
-   * toggle if checkboxes are available or not
-   * @param item the meter currently selected
+   * get all trained Models back
    */
+  extractModels(): void {
+    this.bwsService.getModels().subscribe({
+      next: (response) => {
+        this.models = response.MLModels;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    })
+  }
+
+  // ---------- Checkbox Functions ----------
+
+
+  /**
+ * Check if a physicalMeter is selected for creation of a virtual meter
+ * @param item the physicalMeter to be checked
+ * @param event the event from checkbox
+ */
+  toggleSelectedPhysicalMeter(item: PhysicalMeter, event: Event) {
+
+    // FIXME Necessary to have all this code? Other functions work without it aswell
+    const isChecked = (event.target as HTMLInputElement).checked;
+
+    if (isChecked) {
+      this.selectedPhysicalMeters.push(item);
+    } else {
+      const index = this.selectedPhysicalMeters.findIndex(meter => meter.id === item.id);
+      if (index !== -1) {
+        this.selectedPhysicalMeters.splice(index, 1);
+      }
+    }
+  }
+
+  /**
+  * toggle if checkboxes are available or not
+  * @param item the meter currently selected
+  */
   toggleSelectedVirtualMeter(item: any) {
     if (this.selectedVirtualMeter === item) {
       this.selectedVirtualMeter = undefined; // Untick the selected item
@@ -150,6 +179,19 @@ export class BeWaterSmartComponent implements OnInit {
     }
   }
 
+  toggleSelectedModel(item: any) {
+    if (this.selectedModel === item) {
+      this.selectedModel = undefined; // Untick the selected item
+    } else {
+      this.selectedModel = item; // Tick the selected item
+    }
+  }
+
+  chooseAlgorithm(input: Algorithm): void {
+    this.selectedAlgorithm = input;
+  }
+
+  // ---------- VirtualMeterList Functions ----------
 
   /**
    * creates a new VMeter with an @input name and the id-list of the selected physical meters.
@@ -188,7 +230,7 @@ export class BeWaterSmartComponent implements OnInit {
   deleteVMeterById(id: string, index: number): void {
     this.bwsService.delVirtualMeterById(id).subscribe({
       next: (response) => {
-        if (response.hasOwnProperty('msg')) {
+        if (response && response.hasOwnProperty('msg')) {
           alert("Virtual Meter with Name " + id + " not found!");
         } else {
           alert("Virtual Meter with Name: " + id + " deleted!")
@@ -203,23 +245,6 @@ export class BeWaterSmartComponent implements OnInit {
   }
 
   // ---------- Algorithm Functions ----------
-
-  extractAlgorithms(): void {
-    this.bwsService.getAlgorithms().subscribe({
-      next: (response) => {
-        // extracts the meters content immediately, 
-        // so you dont have to do it all the time
-        this.algorithms = response.algorithms;
-      },
-      error: (error) => {
-        console.log(error);
-      },
-    })
-  }
-
-  chooseAlgorithm(input: Algorithm): void {
-    this.selectedAlgorithm = input;
-  }
 
   /**
    * train one of the Models and retrieve the training data
@@ -258,34 +283,11 @@ export class BeWaterSmartComponent implements OnInit {
     })
   }
 
-  /**
-   * get all trained Models back
-   */
-  extractModels(): void {
-    this.bwsService.getModels().subscribe({
-      next: (response) => {
-        this.models = response.MLModels;
-      },
-      error: (error) => {
-        console.log(error);
-      },
-    })
-  }
-
-  toggleSelectedModel(item: any) {
-    if (this.selectedModel === item) {
-      this.selectedModel = undefined; // Untick the selected item
-    } else {
-      this.selectedModel = item; // Tick the selected item
-    }
-  }
-
-
   deleteModel(vMeterId: string, algId: string, index: number): void {
 
     this.bwsService.delModel(vMeterId, algId).subscribe({
       next: (response) => {
-        if (response.hasOwnProperty('message')) {
+        if (response && response.hasOwnProperty('message')) {
           alert("Model to delete not found");
         } else {
           this.models.splice(index, 1);
@@ -297,7 +299,6 @@ export class BeWaterSmartComponent implements OnInit {
       },
     })
   }
-
 
   // ---------- Forecast Creation -----------
 
@@ -393,9 +394,6 @@ export class BeWaterSmartComponent implements OnInit {
       },
     });
   }
-
-
-
 
   // ---------- Utility Functions ----------
 

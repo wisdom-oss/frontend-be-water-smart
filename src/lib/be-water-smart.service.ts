@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpContext } from "@angular/common/http";
 import { USE_API_URL, USE_LOADER, USE_ERROR_HANDLER } from 'common';
-import { AllPhysicalMeters, AllVirtualMeters, AllAlgorithms, AllModels, VirtualMeter, ForeCast } from './bws-interfaces';
+import { AllPhysicalMeters, AllVirtualMeters, AllAlgorithms, AllModels, VirtualMeter, ForeCast, PhysicalMeter } from './bws-interfaces';
 import { Observable } from 'rxjs';
 
 
@@ -22,116 +22,90 @@ export class BeWaterSmartService {
 
   constructor(private http: HttpClient) { }
 
+  /**
+   * generalized request method for bws api
+   * @param method to use for request
+   * @param url string as api endpoint
+   * @param ctx additional information about request
+   * @param requestBody bonus information in post and put requests
+   * @returns an Observable with the set interface
+   */
+  sendRequest<T>(method: 'get' | 'post' | 'put' | 'delete', url: string, ctx?: HttpContext, requestBody?: any) {
+
+    let finalUrl = this.api_prefix + url;
+    let finalCtx = ctx || this.ctx;
+
+    let requestOptions: any = {
+      context: finalCtx,
+      responseType: 'json',
+      body: requestBody
+    };
+
+    return this.http.request<T>(method, finalUrl, requestOptions) as Observable<T>;
+  }
+
   getDebugMessage() {
-    let url = this.api_prefix + "/debug";
-
-    console.log(url);
-
-    return this.http.get(url, {
-      responseType: "json",
-      context: this.ctx,
-    })
+    return this.sendRequest("get", "/debug")
   }
 
   getPhysicalMeters() {
-    let url = this.api_prefix + "/physical-meters";
-
-    return this.http.get<AllPhysicalMeters>(url, {
-      context: this.ctx,
-      responseType: "json",
-    })
+    return this.sendRequest<AllPhysicalMeters>("get", "/physical-meters")
   }
 
   getVirtualMeters() {
-    let url = this.api_prefix + "/virtual-meters";
-
-    return this.http.get<AllVirtualMeters>(url, {
-      context: this.ctx,
-      responseType: "json",
-    })
-  }
-
-  getPhysicalMeterById(input: string) {
-    let url = this.api_prefix + "/physical-meters" + input
-
-    return this.http.get(url, {
-      context: this.ctx,
-      responseType: "json",
-    })
-  }
-
-  addVirtualMeterWithId(id: string, submeters: any) {
-    let url = this.api_prefix + "/virtual-meters?name=" + id;
-
-    return this.http.post(url, submeters, {
-      context: this.ctx,
-      responseType: "json",
-    })
-  }
-
-  delVirtualMeterById(input: string) {
-    let url = this.api_prefix + "/virtual-meters/" + input
-
-    return this.http.delete(url, {
-      context: this.ctx,
-      responseType: "json",
-    })
+    return this.sendRequest<AllVirtualMeters>("get", "/virtual-meters")
   }
 
   getAlgorithms() {
-    let url = this.api_prefix + "/algorithms";
+    return this.sendRequest<AllAlgorithms>("get", "/algorithms");
+  }
 
+  getModels() {
+    return this.sendRequest<AllModels>("get", "/models");
 
-    return this.http.get<AllAlgorithms>(url, {
-      context: this.ctx,
-      responseType: "json",
-    })
+  }
+
+  getCreateForecast(meterId: string, alg: string): Observable<ForeCast[]> {
+    let url = "/meters/" + meterId + "/forecast" + "?algorithm=" + alg
+
+    return this.sendRequest<ForeCast[]>("get", url);
+  }
+
+  addVirtualMeterWithId(id: string, submeters: any) {
+    let url = "/virtual-meters?name=" + id;
+
+    return this.sendRequest<AllVirtualMeters>("post", url, this.ctx, submeters);
+  }
+
+  delVirtualMeterById(input: string) {
+    let url = "/virtual-meters/" + input
+
+    return this.sendRequest("delete", url);
   }
 
   putTrainModel(meter: VirtualMeter, input: Algorithm, comment?: string) {
     let virt = meter.id.toString();
     let alg = input.name.toString();
 
-    //FIXME added api/ because put wont get resolved in load injector
-    let url = "api/" + this.api_prefix + "/meters/" + virt + "/models/" + alg;
+    let url = "/meters/" + virt + "/models/" + alg;
 
     if (comment) {
       url = url + "?comment=" + comment;
     }
 
-    return this.http.put<AllModels>(url, {
-      context: this.ctx,
-      responseType: "json",
-    })
-  }
+    let ctx: HttpContext = new HttpContext()
+      .set(USE_API_URL, true)
+      .set(USE_LOADER, true)
+      .set(USE_ERROR_HANDLER, 1);
 
-  getModels() {
-    let url = this.api_prefix + "/models";
-
-    return this.http.get<AllModels>(url, {
-      context: this.ctx,
-      responseType: "json",
-    })
+    return this.sendRequest<AllModels>("put", url, ctx);
   }
 
   delModel(meter: string, alg: string) {
 
-    //fix Url
-    let url = this.api_prefix + "/models/" + meter + ":MLModel:" + alg;
+    let url = "/models/" + meter + ":MLModel:" + alg;
 
-    return this.http.delete(url, {
-      context: this.ctx,
-      responseType: "json",
-    })
-  }
-
-  getCreateForecast(meterId: string, alg: string): Observable<ForeCast[]> {
-    let url = this.api_prefix + "/meters/" + meterId + "/forecast" + "?algorithm=" + alg
-
-    return this.http.get<ForeCast[]>(url, {
-      context: this.ctx,
-      responseType: "json",
-    })
+    return this.sendRequest("delete", url);
   }
 
 
