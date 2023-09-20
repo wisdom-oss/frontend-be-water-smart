@@ -1,18 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpContext } from "@angular/common/http";
 import { USE_API_URL, USE_LOADER, USE_ERROR_HANDLER } from 'common';
-import { AllPhysicalMeters, AllVirtualMeters, AllAlgorithms, AllModels, VirtualMeter, ForeCast, PhysicalMeter } from './bws-interfaces';
+import { AllPhysicalMeters, AllVirtualMeters, AllAlgorithms, AllModels, VirtualMeter, ForeCast } from './bws-interfaces';
 import { Observable } from 'rxjs';
+import { Router } from "@angular/router";
 
-
+// the prefix to use in order to reach the BeWaterSmart api
+const API_PREFIX = "bws";
 
 @Injectable({
   providedIn: 'root'
 })
 export class BeWaterSmartService {
-
-  // the prefix to use in order to reach the BeWaterSmart api
-  api_prefix = "bws";
 
   // httpContext with base values
   ctx: HttpContext = new HttpContext()
@@ -20,7 +19,7 @@ export class BeWaterSmartService {
     .set(USE_LOADER, false)
     .set(USE_ERROR_HANDLER, 1);
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   /**
    * generalized request method for bws api
@@ -32,7 +31,8 @@ export class BeWaterSmartService {
    */
   sendRequest<T>(method: 'get' | 'post' | 'put' | 'delete', url: string, ctx?: HttpContext, requestBody?: any) {
 
-    let finalUrl = this.api_prefix + url;
+    // FIXME continue here
+    let finalUrl = this.router.parseUrl(API_PREFIX + url);
     let finalCtx = ctx || this.ctx;
 
     let requestOptions: any = {
@@ -41,7 +41,7 @@ export class BeWaterSmartService {
       body: requestBody
     };
 
-    return this.http.request<T>(method, finalUrl, requestOptions) as Observable<T>;
+    return this.http.request<T>(method, finalUrl.toString(), requestOptions) as Observable<T>;
   }
 
   getDebugMessage() {
@@ -62,7 +62,6 @@ export class BeWaterSmartService {
 
   getModels() {
     return this.sendRequest<AllModels>("get", "/models");
-
   }
 
   getCreateForecast(meterId: string, alg: string): Observable<ForeCast[]> {
