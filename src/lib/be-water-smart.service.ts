@@ -1,9 +1,17 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpContext } from "@angular/common/http";
-import { USE_API_URL, USE_LOADER, USE_ERROR_HANDLER } from 'common';
-import { AllPhysicalMeters, AllVirtualMeters, AllAlgorithms, AllModels, VirtualMeter, ForeCast } from './bws-interfaces';
-import { Observable } from 'rxjs';
-import { Router } from "@angular/router";
+import {HttpClient, HttpContext} from "@angular/common/http";
+import {Injectable} from "@angular/core";
+import {Router} from "@angular/router";
+import {USE_API_URL, USE_LOADER, USE_ERROR_HANDLER} from "common";
+import {Observable} from "rxjs";
+
+import {
+  AllAlgorithms,
+  ForeCast,
+  VirtualMeter,
+  AllPhysicalMeters,
+  AllVirtualMeters,
+  AllModels
+} from "./bws-interfaces";
 
 // the prefix to use in order to reach the BeWaterSmart api
 const API_PREFIX = "bws";

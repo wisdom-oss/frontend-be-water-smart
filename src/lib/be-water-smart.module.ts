@@ -1,9 +1,10 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Import CommonModule
-import { BeWaterSmartComponent } from './be-water-smart.component';
-import { TranslateModule } from "@ngx-translate/core";
-import { WisdomModule } from "common";
-import { FormsModule } from '@angular/forms';
+import {CommonModule} from "@angular/common";
+import {NgModule} from "@angular/core";
+import {FormsModule} from "@angular/forms";
+import {TranslateModule} from "@ngx-translate/core";
+import {WisdomModule} from "common";
+
+import {BeWaterSmartComponent} from "./be-water-smart.component";
 
 
 

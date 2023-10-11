@@ -1,7 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { BeWaterSmartService } from './be-water-smart.service';
-import { PhysicalMeter, VirtualMeter, Algorithm, MLModel } from './bws-interfaces';
-import Chart from 'chart.js/auto';
+import {Component, OnInit} from "@angular/core";
+import Chart from "chart.js/auto";
+
+import {BeWaterSmartService} from "./be-water-smart.service";
+import {
+  Algorithm,
+  PhysicalMeter,
+  VirtualMeter,
+  MLModel
+} from "./bws-interfaces";
 
 @Component({
   selector: 'lib-be-water-smart',

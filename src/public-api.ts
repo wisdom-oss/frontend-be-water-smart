@@ -2,8 +2,9 @@
  * Public API Surface of be-water-smart
  */
 
-import { WisdomInterface } from 'common';
-import { BeWaterSmartComponent } from './lib/be-water-smart.component';
+import {WisdomInterface} from "common";
+
+import {BeWaterSmartComponent} from "./lib/be-water-smart.component";
 
 export const wisdomInterface: WisdomInterface = {
   route: {
