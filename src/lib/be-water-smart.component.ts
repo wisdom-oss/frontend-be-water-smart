@@ -17,25 +17,40 @@ import {
 })
 export class BeWaterSmartComponent implements OnInit {
 
-  // ---------- Layout Parameters ----------
+  // ---------- Layout Parameters ---------- 
 
-  // max number of characters per column
+  /**
+   * max number of characters per column
+   */
   slice: number = 20;
 
-  // box height of physical meters
+  /**
+   * box height physical meter display, table height in relation
+   */
   heightPM: string = "30vh";
   heightPMTable: string = this.calcRelBoxHeight(this.heightPM, 0.5);
 
-  // box height of virtual meters
+  /**
+   * box height virtual meter display, table height in relation
+   */
   heightVM: string = "60vh";
   heightVMTable: string = this.calcRelBoxHeight(this.heightVM, 0.55);
 
+  /**
+   * box height algorithm display, table height in relation
+   */
   heightAlg: string = "65vh";
   heightAlgTable: string = this.calcRelBoxHeight(this.heightAlg, 0.7);
 
+  /**
+   * box height model meter display, table height in relation
+   */
   heightModel: string = "30vh";
   heightModelTable: string = this.calcRelBoxHeight(this.heightModel, 0.7);
 
+  /**
+   * box height forecast graph, table height in relation
+   */
   heightForecast: string = "90vh";
   heightForecastGraph: string = this.calcRelBoxHeight(this.heightModel, 0.8);
 
@@ -43,45 +58,76 @@ export class BeWaterSmartComponent implements OnInit {
 
   // ---------- Physical Meter Parameters ----------
 
-  // list of physical meter | jsonobjects
+  /**
+   * list of physical meters | jsonobjects
+   */
   pMeters: PhysicalMeter[] = [];
 
-  // temporary list of PhysicalMeters to add them to a VirtualMeter
+  /**
+   * list of selected physical meters for virtual meter creation
+   */
   selectedPhysicalMeters: PhysicalMeter[] = [];
 
   // ---------- Virtual Meter Parameters ----------
 
-  // list of virtual meter | jsonobjects
+  /**
+   * list of virtual meters | jsonobjects
+   */
   vMeters: VirtualMeter[] = [];
 
-  selectedVirtualMeters: VirtualMeter[] = [];
-
+  /**
+   * selected virtual meter to train a model
+   */
   selectedVirtualMeter: VirtualMeter | undefined;
 
-  // name for the new virtual meter
+  /**
+   * name of potential new virtual meter
+   */
   newVMeterName: string = "";
 
   // ---------- Algorithm Parameters ----------
 
+  /**
+   * list of all Algorithm
+   */
   algorithms: Algorithm[] = [];
 
+  /**
+   * algorithm to train with a virtual meter
+   */
   selectedAlgorithm: Algorithm | undefined;
 
+  /**
+   * all trained models
+   */
   models: MLModel[] = [];
 
+  /**
+   * selected model for consumption forecast
+   */
   selectedModel: MLModel | undefined;
 
+  /**
+   * comment to reidentify a model
+   */
   modelComment: string | undefined;
 
   // ---------- Forecast Parameters ----------
 
-  chart: any; // Chart.js chart instance
+  /**
+   * chart variable holding a chart.js
+   */
+  chart: any;
 
+  /**
+   * variable determining if chart gets displayed
+   */
   dataAvailable: boolean = false;
 
   constructor(public bwsService: BeWaterSmartService) { }
 
   ngOnInit(): void {
+    // initialize all displays when rendering web page
     this.extractPMeters();
     this.extractVMeters();
     this.extractAlgorithms();
@@ -92,7 +138,7 @@ export class BeWaterSmartComponent implements OnInit {
   // ---------- Extracting Functions ----------
 
   /**
-   * extract  physical meters from  database
+   * calls bws service to retrieve all physical meter information
    */
   extractPMeters(): void {
     this.bwsService.getPhysicalMeters().subscribe({
@@ -108,7 +154,7 @@ export class BeWaterSmartComponent implements OnInit {
   }
 
   /**
-   * extract  virtual meters from database
+   * calls bws service to retrieve all virtual meter information
    */
   extractVMeters(): void {
     this.bwsService.getVirtualMeters().subscribe({
@@ -123,6 +169,9 @@ export class BeWaterSmartComponent implements OnInit {
     })
   }
 
+  /**
+   * calls bws service to retrieve all algorithms
+   */
   extractAlgorithms(): void {
     this.bwsService.getAlgorithms().subscribe({
       next: (response) => {
@@ -137,7 +186,7 @@ export class BeWaterSmartComponent implements OnInit {
   }
 
   /**
-   * get all trained Models back
+   * calls bws service to retrieve all trained models
    */
   extractModels(): void {
     this.bwsService.getModels().subscribe({
@@ -185,6 +234,10 @@ export class BeWaterSmartComponent implements OnInit {
     }
   }
 
+  /**
+   * makes only one trained model selectable at a time for forecasting
+   * @param item variable holding the checkbox information
+   */
   toggleSelectedModel(item: any) {
     if (this.selectedModel === item) {
       this.selectedModel = undefined; // Untick the selected item
@@ -193,6 +246,10 @@ export class BeWaterSmartComponent implements OnInit {
     }
   }
 
+  /**
+   * save selected algorithm information to variable
+   * @param input algorithm selected to use
+   */
   chooseAlgorithm(input: Algorithm): void {
     this.selectedAlgorithm = input;
   }
@@ -289,6 +346,12 @@ export class BeWaterSmartComponent implements OnInit {
     })
   }
 
+  /**
+   * delete a model from database using bws service
+   * @param vMeterId id of virtual meter the model is trained on
+   * @param algId id of algorithm which got used to train model
+   * @param index place in list to correctly remove model afterwards
+   */
   deleteModel(vMeterId: string, algId: string, index: number): void {
 
     this.bwsService.delModel(vMeterId, algId).subscribe({
@@ -403,7 +466,9 @@ export class BeWaterSmartComponent implements OnInit {
 
   // ---------- Utility Functions ----------
 
-  // get the debug message -> check if api is reachable
+  /**
+   * successful request -> reachable api
+   */
   getDebugMessage(): void {
     let a = this.bwsService.getDebugMessage();
     a.subscribe({
@@ -477,6 +542,11 @@ export class BeWaterSmartComponent implements OnInit {
     return newTimes
   }
 
+  /**
+   * takes date string as input and transforms it into day.month.year format
+   * @param input string to be transformed
+   * @returns string in correct format
+   */
   stripDate(input: string): string {
     const date = new Date(input);
     const day = ('0' + date.getDate()).slice(-2);
