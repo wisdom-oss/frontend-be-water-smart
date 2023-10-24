@@ -1,0 +1,1347 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>be-water-smart documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/stripe.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">be-water-smart documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >BeWaterSmartService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/lib/be-water-smart.service.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#ctx" >ctx</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#addVirtualMeterWithId" >addVirtualMeterWithId</a>
+                            </li>
+                            <li>
+                                <a href="#delModel" >delModel</a>
+                            </li>
+                            <li>
+                                <a href="#delVirtualMeterById" >delVirtualMeterById</a>
+                            </li>
+                            <li>
+                                <a href="#getAlgorithms" >getAlgorithms</a>
+                            </li>
+                            <li>
+                                <a href="#getCreateForecast" >getCreateForecast</a>
+                            </li>
+                            <li>
+                                <a href="#getDebugMessage" >getDebugMessage</a>
+                            </li>
+                            <li>
+                                <a href="#getModels" >getModels</a>
+                            </li>
+                            <li>
+                                <a href="#getPhysicalMeters" >getPhysicalMeters</a>
+                            </li>
+                            <li>
+                                <a href="#getVirtualMeters" >getVirtualMeters</a>
+                            </li>
+                            <li>
+                                <a href="#putTrainModel" >putTrainModel</a>
+                            </li>
+                            <li>
+                                <a href="#sendRequest" >sendRequest</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(http: HttpClient, router: Router)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/lib/be-water-smart.service.ts:32</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>http</td>
+                                                  
+                                                        <td>
+                                                                    <code>HttpClient</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                    <code>Router</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addVirtualMeterWithId"></a>
+                    <span class="name">
+                        <span ><b>addVirtualMeterWithId</b></span>
+                        <a href="#addVirtualMeterWithId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>addVirtualMeterWithId(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, submeters: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="117"
+                            class="link-to-prism">src/lib/be-water-smart.service.ts:117</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>posts a request to bws api in order to create a new virtual meter</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>name of the virtual meter</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>submeters</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>all physical meters contained by the virtual meter</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;T&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>observable containing a success or http error msg</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="delModel"></a>
+                    <span class="name">
+                        <span ><b>delModel</b></span>
+                        <a href="#delModel"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>delModel(meter: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, alg: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="170"
+                            class="link-to-prism">src/lib/be-water-smart.service.ts:170</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>delete request for the bws api.
+as requested by the api itself, you cant reference a model directly, but rather have to type in the
+virtual meter and algorithm used and the api tracks down, which model it could be. Don&#39;t know why.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>meter</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>name of the virtual meter which got used to train the model</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>alg</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>algorithm trained in the model</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;T&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>observable containing success or http error msg</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="delVirtualMeterById"></a>
+                    <span class="name">
+                        <span ><b>delVirtualMeterById</b></span>
+                        <a href="#delVirtualMeterById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>delVirtualMeterById(input: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="128"
+                            class="link-to-prism">src/lib/be-water-smart.service.ts:128</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>deletes virtual meter per id from the bws api</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>input</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>the name of virtual meter to be deleted</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;T&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>observable containing success or http error msg</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAlgorithms"></a>
+                    <span class="name">
+                        <span ><b>getAlgorithms</b></span>
+                        <a href="#getAlgorithms"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getAlgorithms()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="87"
+                            class="link-to-prism">src/lib/be-water-smart.service.ts:87</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>requests all algorithms provided by bws api</p>
+</div>
+
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;T&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>observable containing list of all algorithms</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getCreateForecast"></a>
+                    <span class="name">
+                        <span ><b>getCreateForecast</b></span>
+                        <a href="#getCreateForecast"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getCreateForecast(meterId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, alg: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="105"
+                            class="link-to-prism">src/lib/be-water-smart.service.ts:105</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>request the forecast data to create a graph from bws api</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>meterId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>id of the virtual meter being used</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>alg</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>name of the algorithm being used</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/ForeCast.html" target="_self" >Observable&lt;ForeCast[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>observable containing all measuring points for the next day</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getDebugMessage"></a>
+                    <span class="name">
+                        <span ><b>getDebugMessage</b></span>
+                        <a href="#getDebugMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getDebugMessage()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="63"
+                            class="link-to-prism">src/lib/be-water-smart.service.ts:63</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>uses send request method to test the reachability of bws api</p>
+</div>
+
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;T&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>success message or http error</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getModels"></a>
+                    <span class="name">
+                        <span ><b>getModels</b></span>
+                        <a href="#getModels"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getModels()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="95"
+                            class="link-to-prism">src/lib/be-water-smart.service.ts:95</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>requests all trained models from bws api</p>
+</div>
+
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;T&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>observable containing list of all trained models</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getPhysicalMeters"></a>
+                    <span class="name">
+                        <span ><b>getPhysicalMeters</b></span>
+                        <a href="#getPhysicalMeters"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getPhysicalMeters()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="71"
+                            class="link-to-prism">src/lib/be-water-smart.service.ts:71</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>requests physical meter information from bws api</p>
+</div>
+
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;T&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>observable containing list of all pm information</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getVirtualMeters"></a>
+                    <span class="name">
+                        <span ><b>getVirtualMeters</b></span>
+                        <a href="#getVirtualMeters"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getVirtualMeters()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="79"
+                            class="link-to-prism">src/lib/be-water-smart.service.ts:79</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>requests virtual meter information from bws api</p>
+</div>
+
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;T&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>observable containing list of all vm information</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="putTrainModel"></a>
+                    <span class="name">
+                        <span ><b>putTrainModel</b></span>
+                        <a href="#putTrainModel"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>putTrainModel(meter: <a href="../interfaces/VirtualMeter.html" target="_self">VirtualMeter</a>, input: <a href="../interfaces/Algorithm.html" target="_self">Algorithm</a>, comment?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="144"
+                            class="link-to-prism">src/lib/be-water-smart.service.ts:144</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>train a new model via bws api using loading bar in http context,
+because of long execution time.
+-&gt; every virtual meter can only hold a single model in combination with a
+algorithm</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>meter</td>
+                                    <td>
+                                                <code><a href="../interfaces/VirtualMeter.html" target="_self" >VirtualMeter</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>virtual meter to be used as training data</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>input</td>
+                                    <td>
+                                                <code><a href="../interfaces/Algorithm.html" target="_self" >Algorithm</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>the algorithm to train</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>comment</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                    <td>
+                                        <p>string to identify the trained model afterwards</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;T&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>observable containing all training data in a list</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sendRequest"></a>
+                    <span class="name">
+                        <span ><b>sendRequest</b></span>
+                        <a href="#sendRequest"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>sendRequest(method: "get" | "post" | "put" | "delete", url: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, ctx?: HttpContext, requestBody?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="44"
+                            class="link-to-prism">src/lib/be-water-smart.service.ts:44</a></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Type parameters :</b>
+                    <ul class="type-parameters">
+                        <li>T</li>
+                    </ul>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>generalized request method for bws api</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>method</td>
+                                    <td>
+                                            <code>&quot;get&quot; | &quot;post&quot; | &quot;put&quot; | &quot;delete&quot;</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>to use for request</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>url</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>string as api endpoint</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ctx</td>
+                                    <td>
+                                            <code>HttpContext</code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                    <td>
+                                        <p>additional information about request</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>requestBody</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                    <td>
+                                        <p>bonus information in post and put requests</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;T&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>an Observable with the set interface</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ctx"></a>
+                    <span class="name">
+                        <span ><b>ctx</b></span>
+                        <a href="#ctx"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>HttpContext</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new HttpContext()
+    .set(USE_API_URL, true)
+    .set(USE_LOADER, false)
+    .set(USE_ERROR_HANDLER, 1)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/lib/be-water-smart.service.ts:29</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>http context for further information to the request.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {HttpClient, HttpContext} from &quot;@angular/common/http&quot;;
+import {Injectable} from &quot;@angular/core&quot;;
+import {Router} from &quot;@angular/router&quot;;
+import {USE_API_URL, USE_LOADER, USE_ERROR_HANDLER} from &quot;common&quot;;
+import {Observable} from &quot;rxjs&quot;;
+
+import {
+  AllAlgorithms,
+  ForeCast,
+  VirtualMeter,
+  AllPhysicalMeters,
+  AllVirtualMeters,
+  AllModels
+} from &quot;./bws-interfaces&quot;;
+
+/**
+ * constant holding the api prefix to reach the bws api
+ */
+const API_PREFIX &#x3D; &quot;bws&quot;;
+
+@Injectable({
+  providedIn: &#x27;root&#x27;
+})
+export class BeWaterSmartService {
+
+  /**
+   * http context for further information to the request.
+   */
+  ctx: HttpContext &#x3D; new HttpContext()
+    .set(USE_API_URL, true)
+    .set(USE_LOADER, false)
+    .set(USE_ERROR_HANDLER, 1);
+
+  constructor(private http: HttpClient, private router: Router) { }
+
+  /**
+   * generalized request method for bws api
+   * @param method to use for request
+   * @param url string as api endpoint
+   * @param ctx additional information about request
+   * @param requestBody bonus information in post and put requests
+   * @returns an Observable with the set interface
+   */
+  sendRequest&lt;T&gt;(method: &#x27;get&#x27; | &#x27;post&#x27; | &#x27;put&#x27; | &#x27;delete&#x27;, url: string, ctx?: HttpContext, requestBody?: any) {
+
+    // FIXME continue here
+    let finalUrl &#x3D; this.router.parseUrl(API_PREFIX + url);
+    let finalCtx &#x3D; ctx || this.ctx;
+
+    let requestOptions: any &#x3D; {
+      context: finalCtx,
+      responseType: &#x27;json&#x27;,
+      body: requestBody
+    };
+
+    return this.http.request&lt;T&gt;(method, finalUrl.toString(), requestOptions) as Observable&lt;T&gt;;
+  }
+
+  /**
+   * uses send request method to test the reachability of bws api
+   * @returns success message or http error
+   */
+  getDebugMessage() {
+    return this.sendRequest(&quot;get&quot;, &quot;/debug&quot;)
+  }
+
+  /**
+   * requests physical meter information from bws api
+   * @returns observable containing list of all pm information
+   */
+  getPhysicalMeters() {
+    return this.sendRequest&lt;AllPhysicalMeters&gt;(&quot;get&quot;, &quot;/physical-meters&quot;)
+  }
+
+  /**
+   * requests virtual meter information from bws api
+   * @returns observable containing list of all vm information
+   */
+  getVirtualMeters() {
+    return this.sendRequest&lt;AllVirtualMeters&gt;(&quot;get&quot;, &quot;/virtual-meters&quot;)
+  }
+
+  /**
+   * requests all algorithms provided by bws api
+   * @returns observable containing list of all algorithms
+   */
+  getAlgorithms() {
+    return this.sendRequest&lt;AllAlgorithms&gt;(&quot;get&quot;, &quot;/algorithms&quot;);
+  }
+
+  /**
+   * requests all trained models from bws api
+   * @returns observable containing list of all trained models
+   */
+  getModels() {
+    return this.sendRequest&lt;AllModels&gt;(&quot;get&quot;, &quot;/models&quot;);
+  }
+
+  /**
+   * request the forecast data to create a graph from bws api
+   * @param meterId id of the virtual meter being used
+   * @param alg name of the algorithm being used
+   * @returns observable containing all measuring points for the next day
+   */
+  getCreateForecast(meterId: string, alg: string): Observable&lt;ForeCast[]&gt; {
+    let url &#x3D; &quot;/meters/&quot; + meterId + &quot;/forecast&quot; + &quot;?algorithm&#x3D;&quot; + alg
+
+    return this.sendRequest&lt;ForeCast[]&gt;(&quot;get&quot;, url);
+  }
+
+  /**
+   * posts a request to bws api in order to create a new virtual meter
+   * @param id name of the virtual meter
+   * @param submeters all physical meters contained by the virtual meter
+   * @returns observable containing a success or http error msg
+   */
+  addVirtualMeterWithId(id: string, submeters: any) {
+    let url &#x3D; &quot;/virtual-meters?name&#x3D;&quot; + id;
+
+    return this.sendRequest&lt;AllVirtualMeters&gt;(&quot;post&quot;, url, this.ctx, submeters);
+  }
+
+  /**
+   * deletes virtual meter per id from the bws api
+   * @param input the name of virtual meter to be deleted
+   * @returns observable containing success or http error msg
+   */
+  delVirtualMeterById(input: string) {
+    let url &#x3D; &quot;/virtual-meters/&quot; + input
+
+    return this.sendRequest(&quot;delete&quot;, url);
+  }
+
+  /**
+   * train a new model via bws api using loading bar in http context,
+   * because of long execution time.
+   * -&gt; every virtual meter can only hold a single model in combination with a
+   * algorithm
+   * @param meter virtual meter to be used as training data
+   * @param input the algorithm to train
+   * @param comment string to identify the trained model afterwards
+   * @returns observable containing all training data in a list
+   */
+  putTrainModel(meter: VirtualMeter, input: Algorithm, comment?: string) {
+    let virt &#x3D; meter.id.toString();
+    let alg &#x3D; input.name.toString();
+
+    let url &#x3D; &quot;/meters/&quot; + virt + &quot;/models/&quot; + alg;
+
+    if (comment) {
+      url &#x3D; url + &quot;?comment&#x3D;&quot; + comment;
+    }
+
+    let ctx: HttpContext &#x3D; new HttpContext()
+      .set(USE_API_URL, true)
+      .set(USE_LOADER, true)
+      .set(USE_ERROR_HANDLER, 1);
+
+    return this.sendRequest&lt;AllModels&gt;(&quot;put&quot;, url, ctx);
+  }
+
+  /**
+   * delete request for the bws api.
+   * as requested by the api itself, you cant reference a model directly, but rather have to type in the 
+   * virtual meter and algorithm used and the api tracks down, which model it could be. Don&#x27;t know why.
+   * @param meter name of the virtual meter which got used to train the model
+   * @param alg algorithm trained in the model
+   * @returns observable containing success or http error msg
+   */
+  delModel(meter: string, alg: string) {
+
+    let url &#x3D; &quot;/models/&quot; + meter + &quot;:MLModel:&quot; + alg;
+
+    return this.sendRequest(&quot;delete&quot;, url);
+  }
+
+
+}
+
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'BeWaterSmartService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
