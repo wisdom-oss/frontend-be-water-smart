@@ -1,7 +1,7 @@
-import {Component, OnInit} from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import Chart from "chart.js/auto";
 
-import {BeWaterSmartService} from "./be-water-smart.service";
+import { BeWaterSmartService } from "./be-water-smart.service";
 import {
   Algorithm,
   PhysicalMeter,
@@ -52,7 +52,7 @@ export class BeWaterSmartComponent implements OnInit {
    * box height forecast graph, table height in relation
    */
   heightForecast: string = "90vh";
-  heightForecastGraph: string = this.calcRelBoxHeight(this.heightModel, 0.8);
+  heightForecastGraph: string = this.calcRelBoxHeight(this.heightForecast, 0.8);
 
 
 
