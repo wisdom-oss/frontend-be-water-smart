@@ -2009,7 +2009,7 @@ If failed, user gets informed</p>
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>this.calcRelBoxHeight(this.heightModel, 0.8)</code>
+                        <i>Default value : </i><code>this.calcRelBoxHeight(this.heightForecast, 0.8)</code>
                     </td>
                 </tr>
                     <tr>
@@ -2581,10 +2581,10 @@ If failed, user gets informed</p>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {Component, OnInit} from &quot;@angular/core&quot;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit } from &quot;@angular/core&quot;;
 import Chart from &quot;chart.js/auto&quot;;
 
-import {BeWaterSmartService} from &quot;./be-water-smart.service&quot;;
+import { BeWaterSmartService } from &quot;./be-water-smart.service&quot;;
 import {
   Algorithm,
   PhysicalMeter,
@@ -2635,7 +2635,7 @@ export class BeWaterSmartComponent implements OnInit {
    * box height forecast graph, table height in relation
    */
   heightForecast: string &#x3D; &quot;90vh&quot;;
-  heightForecastGraph: string &#x3D; this.calcRelBoxHeight(this.heightModel, 0.8);
+  heightForecastGraph: string &#x3D; this.calcRelBoxHeight(this.heightForecast, 0.8);
 
 
 
@@ -3424,7 +3424,6 @@ export class BeWaterSmartComponent implements OnInit {
     &lt;/table&gt;
   &lt;/div&gt;
 &lt;/div&gt;
-
 &lt;!-- ForeCast Creation --&gt;
 &lt;div class&#x3D;&quot;box&quot; [style]&#x3D;&quot;{ height: heightForecast }&quot;&gt;
   &lt;h1 class&#x3D;&quot;title has-text-centered is-size-3&quot;&gt;Predicted Water Consumption&lt;/h1&gt;
