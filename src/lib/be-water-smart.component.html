@@ -1,5 +1,102 @@
 <!-- Bulma is globally available. -->
 
+<div class="columns">
+  <div class="column is-half">
+    <!-- ForeCast Creation -->
+    <div class="box" [style]="{ height: heightForecast }">
+      <h1 class="title has-text-centered is-size-3">
+        Predicted Water Consumption
+      </h1>
+      <div style="display: block" [style]="{ height: heightForecastGraph }">
+        <canvas id="lineChart"></canvas>
+      </div>
+    </div>
+    <button class="button is-info" (click)="getForecast()">
+      Create forecast
+    </button>
+    <button class="button is-danger" (click)="updateGraphForecast()">
+      TestButton
+    </button>
+  </div>
+  <div class="column is-half">
+    <!-- Model Field-->
+    <div class="box">
+      <h1 class="title has-text-centered is-size-3">
+        Model Selection for Training
+      </h1>
+      <div
+        class="table-container"
+        [style]="{
+          height: heightModel,
+          overflow: models ? 'auto' : 'hidden'
+        }"
+      >
+        <table class="table is-hoverable">
+          <thead class="has-background-dark has-text-white">
+            <tr>
+              <th></th>
+              <th>Used Algorithm</th>
+              <th>Comment</th>
+              <th>Trained Virtual Meter</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of models; let i = index">
+              <td class="is-narrow">
+                <label class="checkbox">
+                  <input
+                    type="checkbox"
+                    [checked]="selectedModel === item"
+                    [disabled]="selectedModel && selectedModel !== item"
+                    (change)="toggleSelectedModel(item)"
+                  />
+                </label>
+              </td>
+              <td class="is-narrow">
+                <abbr title="{{ item.algorithm }}">
+                  {{ item.algorithm.slice(0, slice) }}
+                </abbr>
+              </td>
+              <td>
+                <abbr title="{{ item.comment }}">
+                  {{ item.comment.slice(0, 80) }}
+                </abbr>
+              </td>
+              <td>
+                {{ item.refMeter }}
+              </td>
+              <td>
+                <button
+                  class="button is-danger"
+                  (click)="deleteModel(item.refMeter, item.algorithm, i)"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="box">
+  <div *ngFor="let item of models; let i = index">
+    <p>{{ item.algorithm }}</p>
+    <p>{{ item.comment }}</p>
+    <p>{{ item.refMeter }}</p>
+    <p>{{ item.dateCreated }}</p>
+    <p>{{ item.isModelValid }}</p>
+    <p>{{ item.mlFramework }}</p>
+    <p>{{ item.evaluation.metrics.mape }}</p>
+    <p>{{ item.evaluation.metrics.mse }}</p>
+    <p>{{ item.evaluation.metrics.rmse }}</p>
+    <p>{{ item.evaluation.metrics.smape }}</p>
+  </div>
+</div>
+
 <!-- debug check -->
 <div class="box">
   <h1>Database List test check</h1>

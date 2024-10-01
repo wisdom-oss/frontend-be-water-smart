@@ -8,6 +8,7 @@ import {
   VirtualMeter,
   MLModel
 } from "./bws-interfaces";
+import { JSONObject } from "web-ifc-three/IFC/BaseDefinitions";
 
 @Component({
   selector: 'lib-be-water-smart',
@@ -45,16 +46,23 @@ export class BeWaterSmartComponent implements OnInit {
   /**
    * box height model meter display, table height in relation
    */
-  heightModel: string = "30vh";
-  heightModelTable: string = this.calcRelBoxHeight(this.heightModel, 0.7);
+  heightModel: string = "50vh";
+  heightModelTable: string = this.calcRelBoxHeight(this.heightModel, 0.8);
 
   /**
    * box height forecast graph, table height in relation
    */
-  heightForecast: string = "90vh";
+  heightForecast: string = "50vh";
   heightForecastGraph: string = this.calcRelBoxHeight(this.heightForecast, 0.8);
 
+  // ------------------------------ Chart Parameters --------------------------------------------
 
+  standardTimes: string[] = ['01:00:00', '02:00:00', '03:00:00',
+    '04:00:00', '05:00:00', '06:00:00', '07:00:00',
+    '08:00:00', '09:00:00', '10:00:00', '11:00:00',
+    '12:00:00', '13:00:00', '14:00:00', '15:00:00',
+    '16:00:00', '17:00:00', '18:00:00', '19:00:00',
+    '20:00:00', '21:00:00', '22:00:00', '23:00:00']
 
   // ---------- Physical Meter Parameters ----------
 
@@ -132,7 +140,7 @@ export class BeWaterSmartComponent implements OnInit {
     this.extractVMeters();
     this.extractAlgorithms();
     this.extractModels();
-    this.createForecastGraph();
+    this.createSkeletonGraph();
   }
 
   // ---------- Extracting Functions ----------
@@ -391,17 +399,13 @@ export class BeWaterSmartComponent implements OnInit {
           console.log(response);
         } else {
 
-          let timestamps = this.formatDateTimeGraph(response.map((item) => item.datePredicted));
           let predValues = response.map((item) => item.numValue);
 
           let date = this.stripDate(response[0].datePredicted);
 
           this.dataAvailable = true;
 
-          this.createForecastGraph(timestamps, predValues, date);
-
-          //this.toggleSelectedVirtualMeter;
-          this.toggleSelectedModel;
+          this.updateGraphForecast(predValues, date, vMeterId, algId)
 
         }
       },
@@ -411,38 +415,48 @@ export class BeWaterSmartComponent implements OnInit {
     })
   }
 
-  /**
-   * creates a graph from api
-   * @param xAxis timestamps out of json body
-   * @param yAxis predicted values out of json body
-   * @param date of the day displayed
-   */
-  createForecastGraph(xAxis?: string[], yAxis?: number[], date?: string): void {
-
+  // creates an empty canvas for the prediction data to be populated by data later
+  createSkeletonGraph(): void {
+    // Destroy Chart when redrawn
     if (this.chart) {
       this.chart.destroy();
     }
 
-    let standardTimes: string[] = ['01:00:00', '02:00:00', '03:00:00',
-      '04:00:00', '05:00:00', '06:00:00', '07:00:00',
-      '08:00:00', '09:00:00', '10:00:00', '11:00:00',
-      '12:00:00', '13:00:00', '14:00:00', '15:00:00',
-      '16:00:00', '17:00:00', '18:00:00', '19:00:00',
-      '20:00:00', '21:00:00', '22:00:00', '23:00:00']
+    // Reference line chart in HTML
+    let ctx = document.getElementById('lineChart') as HTMLCanvasElement;
 
-    const ctx = document.getElementById('lineChart') as HTMLCanvasElement;
-    this.chart = new Chart(ctx, {
+    // config element too provide additional information
+    let config: any = {
+      // type of chart
       type: 'line',
+      // data json object
       data: {
-        labels: this.dataAvailable ? xAxis : standardTimes,
+        // values for x axis
+        labels: this.standardTimes,
+        // values, labels etc. for yaxis
         datasets: [
+          // first empty set -> blue
           {
-            label: date,
-            data: this.dataAvailable ? yAxis : [],
+            label: "",
+            data: [],
             borderColor: 'blue',
-            backgroundColor: 'rgba(0,0,255,0.2)',
           },
-        ],
+          {
+            label: "",
+            data: [],
+            borderColor: 'orange',
+          },
+          {
+            label: "",
+            data: [],
+            borderColor: 'green',
+          },
+          {
+            label: "",
+            data: [],
+            borderColor: 'red',
+          },
+        ]
       },
       options: {
         responsive: true,
@@ -456,12 +470,42 @@ export class BeWaterSmartComponent implements OnInit {
           x: {
             title: {
               display: true,
-              text: 'time'
+              text: 'Hour'
             }
           }
         }
-      },
-    });
+      }
+    }
+
+    // create chart
+    this.chart = new Chart(ctx, config);
+
+  }
+
+  updateGraphForecast(yAxis?: number[], date?: string, vMeterId?: string, algId?: string): void {
+    //TODO: Continue here
+
+    let newData = {
+      label: vMeterId + " " + algId,
+      data: yAxis,
+      fill: true,
+      borderColor: 'blue',
+    }
+
+    let testData = {
+      label: vMeterId + " " + algId,
+      data: [10, 15, 20, 25],
+      fill: true,
+      borderColor: 'blue',
+    }
+
+    if (this.chart.config.data.datasets[0].data.length === 0) {
+      this.chart.config.data.datasets[0] = testData;
+      //BUG Be-Water-Smart funktioniert einfach nicht.
+    }
+
+    this.chart.update();
+
   }
 
   // ---------- Utility Functions ----------
@@ -517,29 +561,6 @@ export class BeWaterSmartComponent implements OnInit {
     const seconds = ('0' + date.getSeconds()).slice(-2);
 
     return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
-  }
-
-  /**
-   * format the array to only contain timestamps and no datetime
-   * @param input string array with the contained datetime
-   * @returns string array without the date
-   */
-  formatDateTimeGraph(input: string[]): string[] {
-
-    let newTimes: string[] = [];
-
-    input.forEach(item => {
-      const date = new Date(item);
-      const hours = ('0' + date.getHours()).slice(-2);
-      const minutes = ('0' + date.getMinutes()).slice(-2);
-      const seconds = ('0' + date.getSeconds()).slice(-2);
-
-      let finalTime = `${hours}:${minutes}:${seconds}`;
-
-      newTimes.push(finalTime);
-    });
-
-    return newTimes
   }
 
   /**
