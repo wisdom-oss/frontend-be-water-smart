@@ -1,14 +1,13 @@
 import { Component, OnInit } from "@angular/core";
-import Chart from "chart.js/auto";
-
 import { BeWaterSmartService } from "./be-water-smart.service";
+import { Chart, ChartType, ChartConfiguration } from "chart.js";
 import {
   Algorithm,
   PhysicalMeter,
   VirtualMeter,
   MLModel
 } from "./bws-interfaces";
-import { JSONObject } from "web-ifc-three/IFC/BaseDefinitions";
+
 
 @Component({
   selector: 'lib-be-water-smart',
@@ -17,8 +16,7 @@ import { JSONObject } from "web-ifc-three/IFC/BaseDefinitions";
   ]
 })
 export class BeWaterSmartComponent implements OnInit {
-
-  // ---------- Layout Parameters ---------- 
+  // ---------- Layout Parameters ----------
 
   /**
    * max number of characters per column
@@ -57,12 +55,32 @@ export class BeWaterSmartComponent implements OnInit {
 
   // ------------------------------ Chart Parameters --------------------------------------------
 
+  // standard times of a day, used for x axis
   standardTimes: string[] = ['01:00:00', '02:00:00', '03:00:00',
     '04:00:00', '05:00:00', '06:00:00', '07:00:00',
     '08:00:00', '09:00:00', '10:00:00', '11:00:00',
     '12:00:00', '13:00:00', '14:00:00', '15:00:00',
     '16:00:00', '17:00:00', '18:00:00', '19:00:00',
     '20:00:00', '21:00:00', '22:00:00', '23:00:00']
+
+  // type of chart
+  chartType: ChartType = 'line';
+
+  // datasets and labels to draw the chart
+  chartData: ChartConfiguration['data'] = {
+    labels: this.standardTimes,
+    datasets: [
+      {
+        data: [],
+        label: "Test"
+      },
+    ]
+  }
+
+  // further options to specify in the chart
+  chartOptions: ChartConfiguration['options'] = {
+    responsive: true
+  };
 
   // ---------- Physical Meter Parameters ----------
 
@@ -140,7 +158,6 @@ export class BeWaterSmartComponent implements OnInit {
     this.extractVMeters();
     this.extractAlgorithms();
     this.extractModels();
-    this.createSkeletonGraph();
   }
 
   // ---------- Extracting Functions ----------
@@ -151,7 +168,7 @@ export class BeWaterSmartComponent implements OnInit {
   extractPMeters(): void {
     this.bwsService.getPhysicalMeters().subscribe({
       next: (response) => {
-        // extracts the meters content immediately, 
+        // extracts the meters content immediately,
         // so you dont have to do it all the time
         this.pMeters = response.meters;
       },
@@ -167,7 +184,7 @@ export class BeWaterSmartComponent implements OnInit {
   extractVMeters(): void {
     this.bwsService.getVirtualMeters().subscribe({
       next: (response) => {
-        // extracts the meters content immediately, 
+        // extracts the meters content immediately,
         // so you dont have to do it all the time
         this.vMeters = response.virtualMeters;
       },
@@ -183,7 +200,7 @@ export class BeWaterSmartComponent implements OnInit {
   extractAlgorithms(): void {
     this.bwsService.getAlgorithms().subscribe({
       next: (response) => {
-        // extracts the meters content immediately, 
+        // extracts the meters content immediately,
         // so you dont have to do it all the time
         this.algorithms = response.algorithms;
       },
@@ -267,7 +284,7 @@ export class BeWaterSmartComponent implements OnInit {
   /**
    * creates a new VMeter with an @input name and the id-list of the selected physical meters.
    * If successful, user gets informed and all global variables get set back.
-   * If failed, user gets informed 
+   * If failed, user gets informed
    */
   addVMeter(): void {
 
@@ -405,7 +422,11 @@ export class BeWaterSmartComponent implements OnInit {
 
           this.dataAvailable = true;
 
-          this.updateGraphForecast(predValues, date, vMeterId, algId)
+          let label = vMeterId + algId + " " + date
+
+          //NOTE: Exchange here
+          //this.updateGraphForecast(predValues, date, vMeterId, algId)
+          this.updateGraph(predValues, label)
 
         }
       },
@@ -415,116 +436,17 @@ export class BeWaterSmartComponent implements OnInit {
     })
   }
 
-  // creates an empty canvas for the prediction data to be populated by data later
-  createSkeletonGraph(): void {
-    // Destroy Chart when redrawn
-    if (this.chart) {
-      this.chart.destroy();
+  updateGraph(prediction_values: number[], new_label: string): void {
+
+    this.chartData = {
+      datasets: [
+        { data: prediction_values, label: new_label }
+      ]
     }
-
-    // Reference line chart in HTML
-    let ctx = document.getElementById('lineChart') as HTMLCanvasElement;
-
-    // config element too provide additional information
-    let config: any = {
-      // type of chart
-      type: 'line',
-      // data json object
-      data: {
-        // values for x axis
-        labels: this.standardTimes,
-        // values, labels etc. for yaxis
-        datasets: [
-          // first empty set -> blue
-          {
-            label: "",
-            data: [],
-            borderColor: 'blue',
-          },
-          {
-            label: "",
-            data: [],
-            borderColor: 'orange',
-          },
-          {
-            label: "",
-            data: [],
-            borderColor: 'green',
-          },
-          {
-            label: "",
-            data: [],
-            borderColor: 'red',
-          },
-        ]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            title: {
-              display: true,
-              text: 'm^3'
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Hour'
-            }
-          }
-        }
-      }
-    }
-
-    // create chart
-    this.chart = new Chart(ctx, config);
-
-  }
-
-  updateGraphForecast(yAxis?: number[], date?: string, vMeterId?: string, algId?: string): void {
-    //TODO: Continue here
-
-    let newData = {
-      label: vMeterId + " " + algId,
-      data: yAxis,
-      fill: true,
-      borderColor: 'blue',
-    }
-
-    let testData = {
-      label: vMeterId + " " + algId,
-      data: [10, 15, 20, 25],
-      fill: true,
-      borderColor: 'blue',
-    }
-
-    if (this.chart.config.data.datasets[0].data.length === 0) {
-      this.chart.config.data.datasets[0] = testData;
-      //BUG Be-Water-Smart funktioniert einfach nicht.
-    }
-
-    this.chart.update();
 
   }
 
   // ---------- Utility Functions ----------
-
-  /**
-   * successful request -> reachable api
-   */
-  getDebugMessage(): void {
-    let a = this.bwsService.getDebugMessage();
-    a.subscribe({
-      next: (response) => {
-        console.log(response);
-      },
-      error: (response) => {
-        console.error(response);
-      }
-    })
-
-  }
 
   /**
    * strip value for better clarification
@@ -532,7 +454,6 @@ export class BeWaterSmartComponent implements OnInit {
    * @returns final name string
    */
   stripMeterID(value: string): string {
-    //BUG: called way too often. -> Table is-hoverable
     if (value.includes('urn:ngsi-ld:Device:')) {
       return value.replace('urn:ngsi-ld:Device:', '')
     }
@@ -540,6 +461,9 @@ export class BeWaterSmartComponent implements OnInit {
     if (value.includes('urn:ngsi-ld:virtualMeter:')) {
       return value.replace('urn:ngsi-ld:virtualMeter:', '')
     }
+
+    //BUG: called way too often. -> Table is-hoverable | NOT happening anymore, keep eye on
+    console.log("check")
 
     return 'String not found';
   }
@@ -579,7 +503,7 @@ export class BeWaterSmartComponent implements OnInit {
   }
 
   /**
-   * calculates the table height dependend on the box height 
+   * calculates the table height dependend on the box height
    * @param input the relative height of the box
    * @param share percentage of the table height
    * @returns the new table height parameter

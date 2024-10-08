@@ -1,8 +1,8 @@
-import {HttpClient, HttpContext} from "@angular/common/http";
-import {Injectable} from "@angular/core";
-import {Router} from "@angular/router";
-import {USE_API_URL, USE_LOADER, USE_ERROR_HANDLER} from "common";
-import {Observable} from "rxjs";
+import { HttpClient, HttpContext } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
+import { USE_API_URL, USE_LOADER, USE_ERROR_HANDLER } from "common";
+import { Observable } from "rxjs";
 
 import {
   AllAlgorithms,
@@ -28,7 +28,7 @@ export class BeWaterSmartService {
    */
   ctx: HttpContext = new HttpContext()
     .set(USE_API_URL, true)
-    .set(USE_LOADER, false)
+    .set(USE_LOADER, true)
     .set(USE_ERROR_HANDLER, 1);
 
   constructor(private http: HttpClient, private router: Router) { }
@@ -161,7 +161,7 @@ export class BeWaterSmartService {
 
   /**
    * delete request for the bws api.
-   * as requested by the api itself, you cant reference a model directly, but rather have to type in the 
+   * as requested by the api itself, you cant reference a model directly, but rather have to type in the
    * virtual meter and algorithm used and the api tracks down, which model it could be. Don't know why.
    * @param meter name of the virtual meter which got used to train the model
    * @param alg algorithm trained in the model
