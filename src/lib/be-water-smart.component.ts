@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { BeWaterSmartService } from "./be-water-smart.service";
 import { Chart, ChartType, ChartConfiguration } from "chart.js";
+import { Observable } from "rxjs";
 import {
   Algorithm,
   PhysicalMeter,
@@ -72,7 +73,7 @@ export class BeWaterSmartComponent implements OnInit {
     datasets: [
       {
         data: [],
-        label: "Test"
+        label: ""
       },
     ]
   }
@@ -154,7 +155,7 @@ export class BeWaterSmartComponent implements OnInit {
 
   ngOnInit(): void {
     // initialize all displays when rendering web page
-    this.extractPMeters();
+    this.extractPMeters()
     this.extractVMeters();
     this.extractAlgorithms();
     this.extractModels();
@@ -163,65 +164,62 @@ export class BeWaterSmartComponent implements OnInit {
   // ---------- Extracting Functions ----------
 
   /**
-   * calls bws service to retrieve all physical meter information
+   * Generic Extraction Method for B-Water-Smart
+   * @param extractionMethod the function to use for the api call
+   * @param responseField the field of the response to read
+   * @param destinationField the parameter to save data to
    */
-  extractPMeters(): void {
-    this.bwsService.getPhysicalMeters().subscribe({
+  extractData(extractionMethod: () => Observable<any>, responseField: string, destinationField: keyof this): void {
+    extractionMethod().subscribe({
       next: (response) => {
-        // extracts the meters content immediately,
-        // so you dont have to do it all the time
-        this.pMeters = response.meters;
+        // Dynamically assign the response field to the destination field
+        this[destinationField] = response[responseField];
       },
       error: (error) => {
         console.log(error);
       },
-    })
+    });
+  }
+
+  /**
+   * calls bws service to retrieve all physical meter information
+   */
+  extractPMeters(): void {
+    this.extractData(
+      () => this.bwsService.getPhysicalMeters(),
+      'meters',
+      'pMeters'
+    );
   }
 
   /**
    * calls bws service to retrieve all virtual meter information
    */
   extractVMeters(): void {
-    this.bwsService.getVirtualMeters().subscribe({
-      next: (response) => {
-        // extracts the meters content immediately,
-        // so you dont have to do it all the time
-        this.vMeters = response.virtualMeters;
-      },
-      error: (error) => {
-        console.log(error);
-      },
-    })
+    this.extractData(() => this.bwsService.getVirtualMeters(),
+      'virtualMeters', 'vMeters')
   }
 
   /**
    * calls bws service to retrieve all algorithms
    */
   extractAlgorithms(): void {
-    this.bwsService.getAlgorithms().subscribe({
-      next: (response) => {
-        // extracts the meters content immediately,
-        // so you dont have to do it all the time
-        this.algorithms = response.algorithms;
-      },
-      error: (error) => {
-        console.log(error);
-      },
-    })
+    this.extractData(
+      () => this.bwsService.getAlgorithms(),
+      'algorithms',
+      'algorithms'
+    )
   }
 
   /**
    * calls bws service to retrieve all trained models
    */
   extractModels(): void {
-    this.bwsService.getModels().subscribe({
-      next: (response) => {
-        this.models = response.MLModels;
-      },
-      error: (error) => {
-        console.log(error);
-      },
-    })
+    this.extractData(
+      () => this.bwsService.getModels(),
+      'MLModels',
+      'models'
+    )
   }
 
   // ---------- Checkbox Functions ----------
