@@ -8,6 +8,7 @@ import {
   VirtualMeter,
   MLModel
 } from "./bws-interfaces";
+import { JSONObject } from "web-ifc-three/IFC/BaseDefinitions";
 
 
 @Component({
@@ -25,34 +26,42 @@ export class BeWaterSmartComponent implements OnInit {
   slice: number = 20;
 
   /**
-   * box height physical meter display, table height in relation
+   * box height forecast graph, table height in relation
    */
-  heightPM: string = "30vh";
-  heightPMTable: string = this.calcRelBoxHeight(this.heightPM, 0.5);
-
-  /**
-   * box height virtual meter display, table height in relation
-   */
-  heightVM: string = "60vh";
-  heightVMTable: string = this.calcRelBoxHeight(this.heightVM, 0.55);
-
-  /**
-   * box height algorithm display, table height in relation
-   */
-  heightAlg: string = "65vh";
-  heightAlgTable: string = this.calcRelBoxHeight(this.heightAlg, 0.7);
+  heightForecast: string = "50vh";
+  heightForecastGraph: string = this.calcRelBoxHeight(this.heightForecast, 0.8);
 
   /**
    * box height model meter display, table height in relation
    */
   heightModel: string = "50vh";
-  heightModelTable: string = this.calcRelBoxHeight(this.heightModel, 0.8);
+  heightModelTable: string = this.calcRelBoxHeight(this.heightModel, 1.0);
 
   /**
-   * box height forecast graph, table height in relation
+   * box height algorithm display, table height in relation
    */
-  heightForecast: string = "50vh";
-  heightForecastGraph: string = this.calcRelBoxHeight(this.heightForecast, 0.8);
+  heightAlg: string = "20vh";
+  heightAlgTable: string = this.calcRelBoxHeight(this.heightAlg, 0.7);
+
+  /**
+   * box height virtual meter display, table height in relation
+   */
+  heightVM: string = "40vh";
+  heightVMTable: string = this.calcRelBoxHeight(this.heightVM, 0.55);
+
+  /**
+   * box height physical meter display, table height in relation
+   */
+  heightPM: string = "40vh";
+  heightPMTable: string = this.calcRelBoxHeight(this.heightPM, 0.8);
+
+
+
+
+
+
+
+
 
   // ------------------------------ Chart Parameters --------------------------------------------
 
@@ -286,19 +295,11 @@ export class BeWaterSmartComponent implements OnInit {
    */
   addVMeter(): void {
 
-    let id_list: string[] = [];
-
-    this.selectedPhysicalMeters.forEach((item) => {
-      id_list.push(item.id);
-    });
-
-    let jsonBody = { submeterIds: id_list };
-
-    this.bwsService.addVirtualMeterWithId(this.newVMeterName, jsonBody).subscribe({
+    this.bwsService.addVirtualMeterWithId(this.newVMeterName, this.createSubMeterList()).subscribe({
       next: (response) => {
         if (response.hasOwnProperty("virtualMeterId")) {
           this.selectedPhysicalMeters = [];
-          this.newVMeterName = "";
+          this.newVMeterName = '';
           this.extractVMeters();
         }
       },
@@ -309,20 +310,39 @@ export class BeWaterSmartComponent implements OnInit {
   }
 
   /**
+   * help function for addVMeter()
+   * @returns a list of all ids which are inside the virtual meter
+   */
+  createSubMeterList(): Object {
+    // Create list of physical meter ids
+
+    let id_list: string[] = [];
+
+    this.selectedPhysicalMeters.forEach((item) => {
+      id_list.push(item.id);
+    });
+
+    let jsonBody = { submeterIds: id_list };
+
+    return jsonBody
+  }
+
+  /**
    * delete a virtual meter
    * @param id  name of virtual meter, which functions as it's id
    * @param index index of meter in arr, to hotreload page
    */
   deleteVMeterById(id: string, index: number): void {
+    let tmp_vMeter = this.vMeters.splice(index, 1)
+
     this.bwsService.delVirtualMeterById(id).subscribe({
       next: (response) => {
         if (response && response.hasOwnProperty('msg')) {
+          this.vMeters.push(tmp_vMeter[0]);
           alert("Virtual Meter with Name " + id + " not found!");
-        } else {
-          alert("Virtual Meter with Name: " + id + " deleted!")
-          this.vMeters.splice(index, 1);
-          this.selectedVirtualMeter = undefined;
         }
+
+        alert("Virtual Meter deleted!");
       },
       error: (error) => {
         console.log(error);
@@ -354,14 +374,10 @@ export class BeWaterSmartComponent implements OnInit {
 
     this.bwsService.putTrainModel(this.selectedVirtualMeter, this.selectedAlgorithm, this.modelComment).subscribe({
       next: (response) => {
-
         this.extractModels();
-
         this.toggleSelectedVirtualMeter;
         this.selectedAlgorithm = undefined;
-        this.modelComment = '';
-
-        console.log(response);
+        this.modelComment = undefined;
       },
       error: (error) => {
         console.log(error);

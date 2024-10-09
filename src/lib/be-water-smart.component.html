@@ -1,273 +1,326 @@
 <!-- Bulma is globally available. -->
 
 <div class="columns">
-    <!--Graph Field-->
-    <div class="column is-two-fifths">
-        <div class="box" [style]="{ height: heightModel }">
-            <h1 class="title has-text-centered is-size-3">Predicted Water Consumption</h1>
-            <canvas baseChart [data]="chartData" [options]="chartOptions" [type]="chartType"> </canvas>
-        </div>
-        <button class="button is-primary" (click)="getForecast()">Create Forecast</button>
+  <!--Graph Field-->
+  <div class="column is-two-fifths">
+    <div class="box" [style]="{ height: heightModel }">
+      <h1 class="title has-text-centered is-size-3">
+        Predicted Water Consumption
+      </h1>
+      <canvas
+        baseChart
+        [data]="chartData"
+        [options]="chartOptions"
+        [type]="chartType"
+      >
+      </canvas>
+      <div class="has-text-centered mt-6">
+        <button class="button is-primary" (click)="getForecast()">
+          Create Forecast
+        </button>
+      </div>
     </div>
-    <!-- Model Field-->
-    <div class="column is-three-fifths">
-        <div
-            class="box"
-            [style]="{
-                height: heightModel
-            }"
-        >
-            <h1 class="title has-text-centered is-size-3">Model Selection for Training</h1>
-            <div class="table-container" [style]="{ overflow: models ? 'auto' : 'hidden' }">
-                <table class="table is-hoverable">
-                    <thead class="has-background-dark has-text-white">
-                        <tr>
-                            <th></th>
-                            <th>Algorithm</th>
-                            <th>Comment</th>
-                            <th>Trained Meter</th>
-                            <th>MAPE</th>
-                            <th>MSE</th>
-                            <th>RMSE</th>
-                            <th>SMAPE</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let item of models; let i = index">
-                            <td class="is-narrow">
-                                <label class="checkbox">
-                                    <input
-                                        type="checkbox"
-                                        [checked]="selectedModel === item"
-                                        [disabled]="selectedModel && selectedModel !== item"
-                                        (change)="toggleSelectedModel(item)"
-                                    />
-                                </label>
-                            </td>
-                            <td class="is-narrow">
-                                <abbr title="{{ item.algorithm }}">
-                                    {{ item.algorithm.slice(0, slice) }}
-                                </abbr>
-                            </td>
-                            <td>
-                                <abbr title="{{ item.comment }}">
-                                    {{ item.comment.slice(0, 15) }}
-                                </abbr>
-                            </td>
-                            <td>
-                                <abbr title="{{ item.refMeter }}">
-                                    {{ stripMeterID(item.refMeter) }}
-                                </abbr>
-                            </td>
-                            <td>
-                                <abbr title="{{ item.evaluation.metrics.mape }}">
-                                    {{ item.evaluation.metrics.mape | number : "1.2-2" }}
-                                </abbr>
-                            </td>
-                            <td>
-                                <abbr title="{{ item.evaluation.metrics.mse }}">
-                                    {{ item.evaluation.metrics.mse | number : "1.4-4" }}
-                                </abbr>
-                            </td>
-                            <td>
-                                <abbr title="{{ item.evaluation.metrics.rmse }}">
-                                    {{ item.evaluation.metrics.rmse | number : "1.4-4" }}
-                                </abbr>
-                            </td>
-                            <td>
-                                <abbr title="{{ item.evaluation.metrics.smape }}">
-                                    {{ item.evaluation.metrics.smape | number : "1.2-2" }}
-                                </abbr>
-                            </td>
-                            <td>
-                                <button
-                                    class="button is-danger"
-                                    (click)="deleteModel(item.refMeter, item.algorithm, i)"
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Field for training a model -->
-<div class="box">
-    <h1 class="title has-text-centered is-size-4">Model Training</h1>
-    <div class="field is-grouped is-justify-content-center">
-        <!-- Comment Field-->
-        <div class="control">
-            <input type="text" class="input" placeholder="Add a comment" [(ngModel)]="modelComment" />
-        </div>
-        <div class="control">
-            <div class="select is-fullwidth">
-                <select name="selectedAlgorithm" [(ngModel)]="selectedAlgorithm">
-                    <option value="">--Please choose an option--</option>
-                    <option *ngFor="let item of algorithms; let i = index" [ngValue]="item" [title]="item.description">
-                        {{ item.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div class="control">
-            <button
-                title="Choose an algorithm to train"
-                type="submit"
-                class="button is-info"
-                [disabled]="!selectedVirtualMeter"
-                (click)="trainModel()"
-            >
-                Train
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Virtual Meter Field-->
-<div class="box" [style]="{ height: heightVM }">
-    <h1 class="title has-text-centered is-size-3">Virtual Meter List</h1>
-    <!--Form Field for adding Virtual Meter-->
-    <div class="field is-grouped">
-        <div class="control">
-            <input class="input" type="text" [(ngModel)]="newVMeterName" placeholder="Enter Virtual Meter Name" />
-        </div>
-        <div class="control">
-            <!--FIXME add the disable function -->
-            <button class="button is-success" (click)="addVMeter()" [disabled]="!selectedPhysicalMeters.length">
-                <abbr title="Tick a Physical Meter to continue"> Add </abbr>
-            </button>
-        </div>
-    </div>
-    <!-- Table to show all VirtualMeters -->
+  </div>
+  <!-- Model Field-->
+  <div class="column is-three-fifths">
     <div
+      class="box"
+      [style]="{
+        height: heightModel
+      }"
+    >
+      <h1 class="title has-text-centered is-size-3">
+        Model Selection for Prediction
+      </h1>
+      <div
+        class="table-container"
+        [style]="{ overflow: models ? 'auto' : 'hidden' }"
+      >
+        <table class="table is-hoverable is-fullwidth">
+          <thead class="has-background-dark has-text-white">
+            <tr>
+              <th></th>
+              <th>Algorithm</th>
+              <th>Comment</th>
+              <th>Trained Meter</th>
+              <th>MAPE</th>
+              <th>MSE</th>
+              <th>RMSE</th>
+              <th>SMAPE</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="models.length === 0">
+              <td colspan="9" class="has-text-centered">No data available</td>
+            </tr>
+            <tr *ngFor="let item of models; let i = index">
+              <td class="is-narrow">
+                <label class="checkbox">
+                  <input
+                    type="checkbox"
+                    [checked]="selectedModel === item"
+                    [disabled]="selectedModel && selectedModel !== item"
+                    (change)="toggleSelectedModel(item)"
+                  />
+                </label>
+              </td>
+              <td class="is-narrow">
+                <abbr title="{{ item.algorithm }}">
+                  {{ item.algorithm.slice(0, slice) }}
+                </abbr>
+              </td>
+              <td>
+                <abbr title="{{ item.comment }}">
+                  {{ item.comment.slice(0, slice) }}
+                </abbr>
+              </td>
+              <td>
+                <abbr title="{{ item.refMeter }}">
+                  {{ stripMeterID(item.refMeter).slice(0, slice) }}
+                </abbr>
+              </td>
+              <td>
+                <abbr title="{{ item.evaluation.metrics.mape }}">
+                  {{ item.evaluation.metrics.mape | number : "1.2-2" }}
+                </abbr>
+              </td>
+              <td>
+                <abbr title="{{ item.evaluation.metrics.mse }}">
+                  {{ item.evaluation.metrics.mse | number : "1.4-4" }}
+                </abbr>
+              </td>
+              <td>
+                <abbr title="{{ item.evaluation.metrics.rmse }}">
+                  {{ item.evaluation.metrics.rmse | number : "1.4-4" }}
+                </abbr>
+              </td>
+              <td>
+                <abbr title="{{ item.evaluation.metrics.smape }}">
+                  {{ item.evaluation.metrics.smape | number : "1.2-2" }}
+                </abbr>
+              </td>
+              <td>
+                <button
+                  class="button is-danger"
+                  (click)="deleteModel(item.refMeter, item.algorithm, i)"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Train Model Field -->
+<div class="box" [style]="{ height: heightAlg, width: '100%' }">
+  <h1 class="title has-text-centered is-size-4">Model Training</h1>
+  <div class="field is-grouped is-justify-content-center">
+    <!-- Choose Algorithm -->
+    <div class="control">
+      <div class="select">
+        <select [(ngModel)]="selectedAlgorithm">
+          <option disabled>Choose an algorithm</option>
+          <option
+            *ngFor="let item of algorithms"
+            [ngValue]="item"
+            [title]="item.description"
+          >
+            {{ item.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <!-- Choose Virtual Meter -->
+    <div class="control">
+      <div class="select">
+        <select [(ngModel)]="selectedVirtualMeter">
+          <option disabled>Choose a virtual meter</option>
+          <option
+            *ngFor="let item of vMeters"
+            [ngValue]="item"
+            [title]="item.description"
+          >
+            {{ stripMeterID(item.id) }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <!-- Create a Comment -->
+    <div class="control">
+      <input
+        type="text"
+        class="input"
+        placeholder="Add a comment"
+        [(ngModel)]="modelComment"
+      />
+    </div>
+    <button class="button is-primary" (click)="trainModel()">
+      Train Model
+    </button>
+  </div>
+</div>
+
+<div class="columns">
+  <!-- Physical Meter Field-->
+  <div class="column is-half">
+    <div class="box" [style]="{ height: heightPM }">
+      <h1 class="title has-text-centered is-size-3">Smart Meter List</h1>
+      <div
         class="table-container"
         [style]="{
-            height: heightVMTable,
-            overflow: vMeters ? 'auto' : 'hidden'
+          height: heightPMTable,
+          overflow: pMeters ? 'auto' : 'hidden'
         }"
-    >
-        <table class="table is-hoverable">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Date</th>
-                    <th>SubMeter Amount</th>
-                    <th>SuperMeter Amount</th>
-                    <th>Description</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of vMeters; let i = index">
-                    <td class="is-narrow">
-                        <label class="checkbox">
-                            <input
-                                type="checkbox"
-                                [checked]="selectedVirtualMeter === item"
-                                [disabled]="selectedVirtualMeter && selectedVirtualMeter !== item"
-                                (change)="toggleSelectedVirtualMeter(item)"
-                            />
-                        </label>
-                    </td>
-                    <td>
-                        <abbr title="{{ stripMeterID(item.id) }}">
-                            {{ stripMeterID(item.id).slice(0, slice) }}
-                        </abbr>
-                    </td>
-                    <td>
-                        <abbr title="{{ formatDateTime(item.dateCreated) }}">
-                            {{ formatDateTime(item.dateCreated).slice(0, slice) }}
-                        </abbr>
-                    </td>
-                    <td>
-                        <abbr title="{{ item.submeterIds }}">
-                            {{ item.submeterIds.length }}
-                        </abbr>
-                    </td>
-                    <td>
-                        <abbr title="{{ item.supermeterIds }}">
-                            {{ item.supermeterIds.length }}
-                        </abbr>
-                    </td>
-                    <td>
-                        <abbr title="{{ item.description }}">
-                            {{ item.description.slice(0, slice) }}
-                        </abbr>
-                    </td>
-                    <td class="is-narrow">
-                        <button class="button is-danger" (click)="deleteVMeterById(item.id, i)">Delete</button>
-                    </td>
-                </tr>
-            </tbody>
+      >
+        <table class="table is-hoverable is-fullwidth">
+          <thead class="has-background-dark has-text-white">
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Date</th>
+              <th>Locality</th>
+              <th>Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="pMeters.length === 0">
+              <td colspan="5" class="has-text-centered">No data available</td>
+            </tr>
+            <tr *ngFor="let item of pMeters; let i = index">
+              <td class="is-narrow">
+                <label class="checkbox">
+                  <input
+                    type="checkbox"
+                    [checked]="selectedPhysicalMeters.includes(item)"
+                    (change)="toggleSelectedPhysicalMeter(item, $event)"
+                  />
+                </label>
+              </td>
+              <td class="is-narrow">
+                <abbr title="{{ item.id }}">
+                  {{ stripMeterID(item.id) }}
+                </abbr>
+              </td>
+              <td class="is-narrow">
+                <abbr title="{{ item.date }}">
+                  {{ formatDateTime(item.date).slice(0, slice) }}
+                </abbr>
+              </td>
+              <td class="is-narrow">
+                <abbr title="{{ item.address.addressLocality }}">
+                  {{ item.address.addressLocality.slice(0, slice) }}
+                </abbr>
+              </td>
+              <td class="is-narrow">
+                <abbr title="{{ item.address.streetAddress }}">
+                  {{ item.address.streetAddress.slice(0, slice) }}
+                </abbr>
+              </td>
+            </tr>
+          </tbody>
         </table>
+        <!--Form Field for adding Virtual Meter-->
+        <div class="field is-grouped">
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              [(ngModel)]="newVMeterName"
+              placeholder="Enter Virtual Meter Name"
+            />
+          </div>
+          <div class="control">
+            <button
+              class="button is-success"
+              (click)="addVMeter()"
+              [disabled]="!selectedPhysicalMeters.length"
+            >
+              <abbr title="Tick atleast one Smart Meter to continue">
+                Add
+              </abbr>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
-
-<!-- Physical Meter Field-->
-<div class="box" [style]="{ height: heightPM }">
-    <h1 class="title has-text-centered is-size-3">Smart Meter List</h1>
-    <div class="table-container" [style]="{ height: heightPMTable, overflow: pMeters ? 'auto' : 'hidden' }">
-        <table class="table is-hoverable">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Date</th>
-                    <th>Country</th>
-                    <th>Locality</th>
-                    <th>Address</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of pMeters; let i = index">
-                    <td class="is-narrow">
-                        <label class="checkbox">
-                            <input
-                                type="checkbox"
-                                [checked]="selectedPhysicalMeters.includes(item)"
-                                (change)="toggleSelectedPhysicalMeter(item, $event)"
-                            />
-                        </label>
-                    </td>
-                    <td>
-                        <abbr title="{{ item.id }}">
-                            {{ stripMeterID(item.id) }}
-                        </abbr>
-                    </td>
-                    <td>
-                        <abbr title="{{ item.date }}">
-                            {{ formatDateTime(item.date).slice(0, slice) }}
-                        </abbr>
-                    </td>
-                    <td>
-                        <abbr title="{{ item.address.addressCountry }}">
-                            {{ item.address.addressCountry.slice(0, slice) }}
-                        </abbr>
-                    </td>
-                    <td>
-                        <abbr title="{{ item.address.addressLocality }}">
-                            {{ item.address.addressLocality.slice(0, slice) }}
-                        </abbr>
-                    </td>
-                    <td>
-                        <abbr title="{{ item.address.streetAddress }}">
-                            {{ item.address.streetAddress.slice(0, slice) }}
-                        </abbr>
-                    </td>
-                    <td>
-                        <abbr title="{{ item.description }}">
-                            {{ item.description.slice(0, slice) }}
-                        </abbr>
-                    </td>
-                </tr>
-            </tbody>
+  </div>
+  <!-- Virtual Meter Field-->
+  <div class="column is-half">
+    <div class="box" [style]="{ height: heightVM }">
+      <h1 class="title has-text-centered is-size-3">Virtual Meter List</h1>
+      <!-- Table to show all VirtualMeters -->
+      <div
+        class="table-container"
+        [style]="{
+          height: heightVMTable,
+          overflow: vMeters ? 'auto' : 'hidden'
+        }"
+      >
+        <table class="table is-hoverable is-fullwidth">
+          <thead class="has-background-dark has-text-white">
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Datetime</th>
+              <th>No. of SubMeters</th>
+              <th>No. of SuperMeters</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="vMeters.length === 0">
+              <td colspan="6" class="has-text-centered">No data available</td>
+            </tr>
+            <tr *ngFor="let item of vMeters; let i = index">
+              <td class="is-narrow">
+                <label class="checkbox">
+                  <input
+                    type="checkbox"
+                    [checked]="selectedVirtualMeter === item"
+                    [disabled]="
+                      selectedVirtualMeter && selectedVirtualMeter !== item
+                    "
+                    (change)="toggleSelectedVirtualMeter(item)"
+                  />
+                </label>
+              </td>
+              <td class="is-narrow">
+                <abbr title="{{ stripMeterID(item.id) }}">
+                  {{ stripMeterID(item.id).slice(0, slice) }}
+                </abbr>
+              </td>
+              <td class="is-narrow">
+                <abbr title="{{ formatDateTime(item.dateCreated) }}">
+                  {{ formatDateTime(item.dateCreated).slice(0, slice) }}
+                </abbr>
+              </td>
+              <td class="is-narrow">
+                <abbr title="{{ item.submeterIds }}">
+                  {{ item.submeterIds.length }}
+                </abbr>
+              </td>
+              <td class="is-narrow">
+                <abbr title="{{ item.supermeterIds }}">
+                  {{ item.supermeterIds.length }}
+                </abbr>
+              </td>
+              <td class="is-narrow">
+                <button
+                  class="button is-danger"
+                  (click)="deleteVMeterById(item.id, i)"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
         </table>
+      </div>
     </div>
+  </div>
 </div>

@@ -23,32 +23,27 @@ const API_PREFIX = "bws";
 })
 export class BeWaterSmartService {
 
-  /**
-   * http context for further information to the request.
-   */
-  ctx: HttpContext = new HttpContext()
-    .set(USE_API_URL, true)
-    .set(USE_LOADER, true)
-    .set(USE_ERROR_HANDLER, 1);
-
   constructor(private http: HttpClient, private router: Router) { }
 
   /**
    * generalized request method for bws api
    * @param method to use for request
    * @param url string as api endpoint
-   * @param ctx additional information about request
+   * @param loader true if a loader should appear, false else
    * @param requestBody bonus information in post and put requests
    * @returns an Observable with the set interface
    */
-  sendRequest<T>(method: 'get' | 'post' | 'put' | 'delete', url: string, ctx?: HttpContext, requestBody?: any) {
+  sendRequest<T>(method: 'get' | 'post' | 'put' | 'delete', url: string, loader: boolean, requestBody?: any) {
 
-    // FIXME continue here
     let finalUrl = this.router.parseUrl(API_PREFIX + url);
-    let finalCtx = ctx || this.ctx;
+
+    let ctx: HttpContext = new HttpContext()
+      .set(USE_API_URL, true)
+      .set(USE_LOADER, loader)
+      .set(USE_ERROR_HANDLER, 1);
 
     let requestOptions: any = {
-      context: finalCtx,
+      context: ctx,
       responseType: 'json',
       body: requestBody
     };
@@ -61,7 +56,7 @@ export class BeWaterSmartService {
    * @returns success message or http error
    */
   getDebugMessage() {
-    return this.sendRequest("get", "/debug")
+    return this.sendRequest("get", "/debug", false)
   }
 
   /**
@@ -69,7 +64,7 @@ export class BeWaterSmartService {
    * @returns observable containing list of all pm information
    */
   getPhysicalMeters() {
-    return this.sendRequest<AllPhysicalMeters>("get", "/physical-meters")
+    return this.sendRequest<AllPhysicalMeters>("get", "/physical-meters", false)
   }
 
   /**
@@ -77,7 +72,7 @@ export class BeWaterSmartService {
    * @returns observable containing list of all vm information
    */
   getVirtualMeters() {
-    return this.sendRequest<AllVirtualMeters>("get", "/virtual-meters")
+    return this.sendRequest<AllVirtualMeters>("get", "/virtual-meters", false)
   }
 
   /**
@@ -85,7 +80,7 @@ export class BeWaterSmartService {
    * @returns observable containing list of all algorithms
    */
   getAlgorithms() {
-    return this.sendRequest<AllAlgorithms>("get", "/algorithms");
+    return this.sendRequest<AllAlgorithms>("get", "/algorithms", false);
   }
 
   /**
@@ -93,7 +88,7 @@ export class BeWaterSmartService {
    * @returns observable containing list of all trained models
    */
   getModels() {
-    return this.sendRequest<AllModels>("get", "/models");
+    return this.sendRequest<AllModels>("get", "/models", false);
   }
 
   /**
@@ -105,7 +100,7 @@ export class BeWaterSmartService {
   getCreateForecast(meterId: string, alg: string): Observable<ForeCast[]> {
     let url = "/meters/" + meterId + "/forecast" + "?algorithm=" + alg
 
-    return this.sendRequest<ForeCast[]>("get", url);
+    return this.sendRequest<ForeCast[]>("get", url, true);
   }
 
   /**
@@ -117,7 +112,7 @@ export class BeWaterSmartService {
   addVirtualMeterWithId(id: string, submeters: any) {
     let url = "/virtual-meters?name=" + id;
 
-    return this.sendRequest<AllVirtualMeters>("post", url, this.ctx, submeters);
+    return this.sendRequest<AllVirtualMeters>("post", url, false, submeters);
   }
 
   /**
@@ -128,7 +123,7 @@ export class BeWaterSmartService {
   delVirtualMeterById(input: string) {
     let url = "/virtual-meters/" + input
 
-    return this.sendRequest("delete", url);
+    return this.sendRequest("delete", url, false);
   }
 
   /**
@@ -156,7 +151,7 @@ export class BeWaterSmartService {
       .set(USE_LOADER, true)
       .set(USE_ERROR_HANDLER, 1);
 
-    return this.sendRequest<AllModels>("put", url, ctx);
+    return this.sendRequest<AllModels>("put", url, true);
   }
 
   /**
@@ -171,7 +166,7 @@ export class BeWaterSmartService {
 
     let url = "/models/" + meter + ":MLModel:" + alg;
 
-    return this.sendRequest("delete", url);
+    return this.sendRequest("delete", url, false);
   }
 
 
