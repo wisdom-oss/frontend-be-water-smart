@@ -18,6 +18,19 @@ import { JSONObject } from "web-ifc-three/IFC/BaseDefinitions";
   ]
 })
 export class BeWaterSmartComponent implements OnInit {
+
+  // ---------- StringFormatting ----------
+
+  /**
+   * prefix for internal logic of virtual meter in bws tool
+   */
+  vPrefix: string = "urn:ngsi-ld:virtualMeter:"
+
+  /**
+   * prefix for internal logic of physical meter in bws tool
+   */
+  pPrefix: string = "urn:ngsi-ld:Device:"
+
   // ---------- Layout Parameters ----------
 
   /**
@@ -278,7 +291,6 @@ export class BeWaterSmartComponent implements OnInit {
       },
       error: (error) => {
         console.log(error);
-        alert(error.msg);
       },
     })
   }
@@ -433,26 +445,6 @@ export class BeWaterSmartComponent implements OnInit {
   }
 
   // ---------- Utility Functions ----------
-
-  /**
-   * strip value for better clarification
-   * @param value name of the meter
-   * @returns final name string
-   */
-  stripMeterID(value: string): string {
-    if (value.includes('urn:ngsi-ld:Device:')) {
-      return value.replace('urn:ngsi-ld:Device:', '')
-    }
-
-    if (value.includes('urn:ngsi-ld:virtualMeter:')) {
-      return value.replace('urn:ngsi-ld:virtualMeter:', '')
-    }
-
-    //BUG: called way too often. -> Table is-hoverable | NOT happening anymore, keep eye on
-    console.log("check")
-
-    return 'String not found';
-  }
 
   /**
    * revamps the data format in order to improve readability

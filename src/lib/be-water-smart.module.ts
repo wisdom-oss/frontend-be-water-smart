@@ -17,7 +17,7 @@ import { BeWaterSmartComponent } from "./be-water-smart.component";
     TranslateModule,
     CommonModule,
     FormsModule,
-    NgChartsModule
+    NgChartsModule,
   ],
   exports: [
     BeWaterSmartComponent
