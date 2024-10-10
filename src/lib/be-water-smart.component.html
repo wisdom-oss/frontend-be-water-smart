@@ -14,7 +14,7 @@
         [type]="chartType"
       >
       </canvas>
-      <div class="has-text-centered mt-6">
+      <div class="has-text-centered mt-5">
         <button class="button is-primary" (click)="getForecast()">
           Create Forecast
         </button>
@@ -41,8 +41,8 @@
             <tr>
               <th></th>
               <th>Algorithm</th>
+              <th>Virtual Meter</th>
               <th>Comment</th>
-              <th>Trained Meter</th>
               <th>MAPE</th>
               <th>MSE</th>
               <th>RMSE</th>
@@ -71,13 +71,13 @@
                 </abbr>
               </td>
               <td>
-                <abbr title="{{ item.comment }}">
-                  {{ item.comment.slice(0, slice) }}
+                <abbr title="{{ item.refMeter }}">
+                  {{ stripMeterID(item.refMeter).slice(0, slice) }}
                 </abbr>
               </td>
               <td>
-                <abbr title="{{ item.refMeter }}">
-                  {{ stripMeterID(item.refMeter).slice(0, slice) }}
+                <abbr title="{{ item.comment }}">
+                  {{ item.comment.slice(0, slice) }}
                 </abbr>
               </td>
               <td>
@@ -102,7 +102,7 @@
               </td>
               <td>
                 <button
-                  class="button is-danger"
+                  class="button is-danger is-small"
                   (click)="deleteModel(item.refMeter, item.algorithm, i)"
                 >
                   Delete
@@ -117,14 +117,17 @@
 </div>
 
 <!-- Train Model Field -->
-<div class="box" [style]="{ height: heightAlg, width: '100%' }">
+<div
+  class="box has-text-centered"
+  [style]="{ height: heightAlg, width: '100%' }"
+>
   <h1 class="title has-text-centered is-size-4">Model Training</h1>
   <div class="field is-grouped is-justify-content-center">
     <!-- Choose Algorithm -->
-    <div class="control">
-      <div class="select">
-        <select [(ngModel)]="selectedAlgorithm">
-          <option disabled>Choose an algorithm</option>
+    <div class="control" [style]="{ width: '15%' }">
+      <label class="label" for="algorithmSelect">Algorithm</label>
+      <div class="select is-fullwidth">
+        <select id="algorithmSelect" [(ngModel)]="selectedAlgorithm">
           <option
             *ngFor="let item of algorithms"
             [ngValue]="item"
@@ -136,10 +139,10 @@
       </div>
     </div>
     <!-- Choose Virtual Meter -->
-    <div class="control">
-      <div class="select">
-        <select [(ngModel)]="selectedVirtualMeter">
-          <option disabled>Choose a virtual meter</option>
+    <div class="control" [style]="{ width: '15%' }">
+      <label class="label" for="virtualMeterSelect">Virtual Meter</label>
+      <div class="select is-fullwidth">
+        <select id="virtualMeterSelect" [(ngModel)]="selectedVirtualMeter">
           <option
             *ngFor="let item of vMeters"
             [ngValue]="item"
@@ -151,25 +154,28 @@
       </div>
     </div>
     <!-- Create a Comment -->
-    <div class="control">
+    <div class="control" [style]="{ width: '15%' }">
+      <label class="label" for="commentSelect">Comment</label>
       <input
         type="text"
-        class="input"
+        class="input is-fullwidth"
+        id="commentSelect"
         placeholder="Add a comment"
         [(ngModel)]="modelComment"
       />
     </div>
-    <button class="button is-primary" (click)="trainModel()">
-      Train Model
-    </button>
   </div>
+  <!-- Training Button -->
+  <button class="button is-primary mt-3 mb-3" (click)="trainModel()">
+    Train Model
+  </button>
 </div>
 
 <div class="columns">
   <!-- Physical Meter Field-->
   <div class="column is-half">
     <div class="box" [style]="{ height: heightPM }">
-      <h1 class="title has-text-centered is-size-3">Smart Meter List</h1>
+      <h1 class="title is-size-3 has-text-centered">Smart Meter List</h1>
       <div
         class="table-container"
         [style]="{
@@ -197,7 +203,13 @@
                   <input
                     type="checkbox"
                     [checked]="selectedPhysicalMeters.includes(item)"
-                    (change)="toggleSelectedPhysicalMeter(item, $event)"
+                    (change)="
+                      toggleSelectedMeter(
+                        item,
+                        $event,
+                        this.selectedPhysicalMeters
+                      )
+                    "
                   />
                 </label>
               </td>
@@ -208,7 +220,7 @@
               </td>
               <td class="is-narrow">
                 <abbr title="{{ item.date }}">
-                  {{ formatDateTime(item.date).slice(0, slice) }}
+                  {{ item.date.slice(0, slice) }}
                 </abbr>
               </td>
               <td class="is-narrow">
@@ -224,31 +236,30 @@
             </tr>
           </tbody>
         </table>
-        <!--Form Field for adding Virtual Meter-->
-        <div class="field is-grouped">
-          <div class="control">
-            <input
-              class="input"
-              type="text"
-              [(ngModel)]="newVMeterName"
-              placeholder="Enter Virtual Meter Name"
-            />
-          </div>
-          <div class="control">
-            <button
-              class="button is-success"
-              (click)="addVMeter()"
-              [disabled]="!selectedPhysicalMeters.length"
-            >
-              <abbr title="Tick atleast one Smart Meter to continue">
-                Add
-              </abbr>
-            </button>
-          </div>
+      </div>
+      <!--Form Field for adding Virtual Meter-->
+      <div class="field is-grouped is-grouped-centered">
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            [(ngModel)]="newVMeterName"
+            placeholder="Enter Virtual Meter Name"
+          />
+        </div>
+        <div class="control">
+          <button
+            class="button is-success"
+            (click)="addVMeter(this.selectedPhysicalMeters)"
+            [disabled]="!selectedPhysicalMeters.length"
+          >
+            <abbr title="Tick at least one Smart Meter to continue"> Add </abbr>
+          </button>
         </div>
       </div>
     </div>
   </div>
+
   <!-- Virtual Meter Field-->
   <div class="column is-half">
     <div class="box" [style]="{ height: heightVM }">
@@ -267,8 +278,8 @@
               <th></th>
               <th>Name</th>
               <th>Datetime</th>
-              <th>No. of SubMeters</th>
-              <th>No. of SuperMeters</th>
+              <th>SubMeters</th>
+              <th>SuperMeters</th>
               <th></th>
             </tr>
           </thead>
@@ -281,11 +292,14 @@
                 <label class="checkbox">
                   <input
                     type="checkbox"
-                    [checked]="selectedVirtualMeter === item"
-                    [disabled]="
-                      selectedVirtualMeter && selectedVirtualMeter !== item
+                    [checked]="selectedVirtualMeters.includes(item)"
+                    (change)="
+                      toggleSelectedMeter(
+                        item,
+                        $event,
+                        this.selectedVirtualMeters
+                      )
                     "
-                    (change)="toggleSelectedVirtualMeter(item)"
                   />
                 </label>
               </td>
@@ -295,8 +309,8 @@
                 </abbr>
               </td>
               <td class="is-narrow">
-                <abbr title="{{ formatDateTime(item.dateCreated) }}">
-                  {{ formatDateTime(item.dateCreated).slice(0, slice) }}
+                <abbr title="{{ item.dateCreated }}">
+                  {{ item.dateCreated.slice(0, slice) }}
                 </abbr>
               </td>
               <td class="is-narrow">
@@ -311,7 +325,7 @@
               </td>
               <td class="is-narrow">
                 <button
-                  class="button is-danger"
+                  class="button is-danger is-small"
                   (click)="deleteVMeterById(item.id, i)"
                 >
                   Delete
@@ -320,6 +334,28 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      <!--Form Field for adding Virtual Meter-->
+      <div class="field is-grouped is-grouped-centered">
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            [(ngModel)]="newVMeterName"
+            placeholder="Enter Super Meter Name"
+          />
+        </div>
+        <div class="control">
+          <button
+            class="button is-success"
+            (click)="addVMeter(selectedVirtualMeters)"
+            [disabled]="!selectedVirtualMeters.length"
+          >
+            <abbr title="Tick at least one Virtual Meter to continue">
+              Add
+            </abbr>
+          </button>
+        </div>
       </div>
     </div>
   </div>
