@@ -8,7 +8,8 @@ import {
   VirtualMeter,
   MLModel
 } from "./bws-interfaces";
-import { JSONObject } from "web-ifc-three/IFC/BaseDefinitions";
+import { TransformStringPipe } from "common";
+
 
 
 @Component({
@@ -21,15 +22,11 @@ export class BeWaterSmartComponent implements OnInit {
 
   // ---------- StringFormatting ----------
 
-  /**
-   * prefix for internal logic of virtual meter in bws tool
-   */
-  vPrefix: string = "urn:ngsi-ld:virtualMeter:"
 
   /**
-   * prefix for internal logic of physical meter in bws tool
+   * array of prefixes to remove from id-strings of smart meters
    */
-  pPrefix: string = "urn:ngsi-ld:Device:"
+  prefixes: string[] = ["urn:ngsi-ld:virtualMeter:", "urn:ngsi-ld:Device:"]
 
   // ---------- Layout Parameters ----------
 
@@ -39,28 +36,28 @@ export class BeWaterSmartComponent implements OnInit {
   slice: number = 20;
 
   /**
-   * box height model meter display, table height in relation
+   * height of model selection box
    */
   heightModel: string = "50vh";
-  heightModelTable: string = this.calcRelBoxHeight(this.heightModel, 1.0);
 
   /**
-   * box height algorithm display, table height in relation
+   * height of training algorithm box
    */
   heightAlg: string = "25vh";
-  heightAlgTable: string = this.calcRelBoxHeight(this.heightAlg, 0.7);
 
   /**
-   * box height virtual meter display, table height in relation
+   * box height virtual meter display, 
+   * table height in relation
    */
   heightVM: string = "50vh";
-  heightVMTable: string = this.calcRelBoxHeight(this.heightVM, 0.65);
+  heightVMTable: string = this.calcRelBoxHeight(this.heightVM, 0.65); //0.65
 
   /**
-   * box height physical meter display, table height in relation
+   * box height physical meter display, 
+   * table height in relation
    */
   heightPM: string = "50vh";
-  heightPMTable: string = this.calcRelBoxHeight(this.heightPM, 0.65);
+  heightPMTable: string = this.calcRelBoxHeight(this.heightPM, 0.65); // 0.65
 
 
   // ------------------------------ Chart Parameters --------------------------------------------
@@ -89,7 +86,23 @@ export class BeWaterSmartComponent implements OnInit {
 
   // further options to specify in the chart
   chartOptions: ChartConfiguration['options'] = {
-    responsive: true
+    responsive: true,
+    scales: {
+      y: {
+        stacked: true,
+        title: {
+          display: true,
+          text: "m^3"
+        }
+      },
+      x: {
+        stacked: true,
+        title: {
+          display: true,
+          text: "Time"
+        }
+      }
+    },
   };
 
   // ---------- Physical Meter Parameters ----------
@@ -107,14 +120,14 @@ export class BeWaterSmartComponent implements OnInit {
   // ---------- Virtual Meter Parameters ----------
 
   /**
-   * a list of selectedVirtualMeters to create a Super Meter
-   */
-  selectedVirtualMeters: VirtualMeter[] = [];
-
-  /**
    * list of virtual meters | jsonobjects
    */
   vMeters: VirtualMeter[] = [];
+
+  /**
+   * a list of selectedVirtualMeters to create a Super Meter
+   */
+  selectedVirtualMeters: VirtualMeter[] = [];
 
   /**
    * selected virtual meter to train a model
@@ -124,7 +137,7 @@ export class BeWaterSmartComponent implements OnInit {
   /**
    * name of potential new virtual meter
    */
-  newVMeterName: string = "";
+  newVMeterName: string | undefined;
 
   // ---------- Algorithm Parameters ----------
 
@@ -154,11 +167,6 @@ export class BeWaterSmartComponent implements OnInit {
   modelComment: string | undefined;
 
   // ---------- Forecast Parameters ----------
-
-  /**
-   * variable determining if chart gets displayed
-   */
-  dataAvailable: boolean = false;
 
   constructor(public bwsService: BeWaterSmartService) { }
 
@@ -239,16 +247,11 @@ export class BeWaterSmartComponent implements OnInit {
     if (isChecked) {
       selectedMeters.push(item)
     } else {
-      const index = selectedMeters.findIndex((meter: { id: any; }) => meter.id === item.id);
-
-
+      const index = selectedMeters.findIndex((meter: { id: any; }) => meter.id === item.id)
       if (index > -1) {
         selectedMeters.splice(index, 1); // Remove the item if unchecked
       }
     }
-
-    console.log(selectedMeters);
-
   }
 
   /**
@@ -280,19 +283,26 @@ export class BeWaterSmartComponent implements OnInit {
    */
   addVMeter(selectedMeters: any): void {
 
+    if (!this.newVMeterName) {
+      alert("No Name for Virtual Meter!");
+      return;
+    }
+
     this.bwsService.addVirtualMeterWithId(this.newVMeterName, this.createSubMeterList(selectedMeters)).subscribe({
       next: (response) => {
         if (response.hasOwnProperty("virtualMeterId")) {
           this.selectedPhysicalMeters = [];
           this.selectedVirtualMeters = [];
-          this.newVMeterName = '';
-          this.extractVMeters();
         }
       },
       error: (error) => {
         console.log(error);
       },
     })
+
+    this.newVMeterName = undefined;
+    this.extractVMeters();
+
   }
 
   /**
@@ -302,10 +312,17 @@ export class BeWaterSmartComponent implements OnInit {
   createSubMeterList(selectedMeters: any): Object {
     // Create list of physical meter ids
 
+    let trafo = new TransformStringPipe();
+
     let id_list: string[] = [];
 
     selectedMeters.forEach((item: { id: string; }) => {
-      id_list.push(item.id);
+      let tmp_id = item.id
+
+      let new_id = trafo.transform(tmp_id, this.prefixes[0])
+
+
+      id_list.push(new_id);
     });
 
     let jsonBody = { submeterIds: id_list };
@@ -416,14 +433,10 @@ export class BeWaterSmartComponent implements OnInit {
 
           let predValues = response.map((item) => item.numValue);
 
-          let date = this.stripDate(response[0].datePredicted);
-
-          this.dataAvailable = true;
+          let date = response[0].datePredicted;
 
           let label = vMeterId + algId + " " + date
 
-          //NOTE: Exchange here
-          //this.updateGraphForecast(predValues, date, vMeterId, algId)
           this.updateGraph(predValues, label)
 
         }
@@ -445,42 +458,6 @@ export class BeWaterSmartComponent implements OnInit {
   }
 
   // ---------- Utility Functions ----------
-
-  /**
-   * revamps the data format in order to improve readability
-   * @param input the old date format
-   * @returns the easier to read output
-   */
-  formatDateTime(input: string): string {
-    //BUG: called way too often. -> Table is-hoverable
-    //NOTE remember that this can be slow
-    const date = new Date(input);
-    const day = ('0' + date.getDate()).slice(-2);
-    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-    const year = date.getFullYear();
-    const hours = ('0' + date.getHours()).slice(-2);
-    const minutes = ('0' + date.getMinutes()).slice(-2);
-    const seconds = ('0' + date.getSeconds()).slice(-2);
-
-    console.log(date)
-
-    return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
-  }
-
-  /**
-   * takes date string as input and transforms it into day.month.year format
-   * @param input string to be transformed
-   * @returns string in correct format
-   */
-  stripDate(input: string): string {
-    const date = new Date(input);
-    const day = ('0' + date.getDate()).slice(-2);
-    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-    const year = date.getFullYear();
-
-    return `${day}.${month}.${year}`
-
-  }
 
   /**
    * calculates the table height dependend on the box height
