@@ -8,7 +8,6 @@ import {
   VirtualMeter,
   MLModel
 } from "./bws-interfaces";
-import { TransformStringPipe } from "common";
 
 
 
@@ -166,7 +165,11 @@ export class BeWaterSmartComponent implements OnInit {
    */
   modelComment: string | undefined;
 
-  // ---------- Forecast Parameters ----------
+  /**
+   * flags if a delete operation is in progress
+   * @param isDeleting: boolean flag 
+   */
+  isDeleting: boolean = false;
 
   constructor(public bwsService: BeWaterSmartService) { }
 
@@ -266,14 +269,6 @@ export class BeWaterSmartComponent implements OnInit {
     }
   }
 
-  /**
-   * save selected algorithm information to variable
-   * @param input algorithm selected to use
-   */
-  chooseAlgorithm(input: Algorithm): void {
-    this.selectedAlgorithm = input;
-  }
-
   // ---------- VirtualMeterList Functions ----------
 
   /**
@@ -293,16 +288,14 @@ export class BeWaterSmartComponent implements OnInit {
         if (response.hasOwnProperty("virtualMeterId")) {
           this.selectedPhysicalMeters = [];
           this.selectedVirtualMeters = [];
+          this.newVMeterName = undefined;
+          this.extractVMeters();
         }
       },
       error: (error) => {
         console.log(error);
       },
     })
-
-    this.newVMeterName = undefined;
-    this.extractVMeters();
-
   }
 
   /**
@@ -310,24 +303,14 @@ export class BeWaterSmartComponent implements OnInit {
    * @returns a list of all ids which are inside the virtual meter
    */
   createSubMeterList(selectedMeters: any): Object {
-    // Create list of physical meter ids
-
-    let trafo = new TransformStringPipe();
 
     let id_list: string[] = [];
 
     selectedMeters.forEach((item: { id: string; }) => {
-      let tmp_id = item.id
-
-      let new_id = trafo.transform(tmp_id, this.prefixes[0])
-
-
-      id_list.push(new_id);
+      id_list.push(item.id);
     });
 
-    let jsonBody = { submeterIds: id_list };
-
-    return jsonBody
+    return { submeterIds: id_list }
   }
 
   /**
@@ -336,18 +319,30 @@ export class BeWaterSmartComponent implements OnInit {
    * @param index index of meter in arr, to hotreload page
    */
   deleteVMeterById(id: string, index: number): void {
-    let tmp_vMeter = this.vMeters.splice(index, 1)
+    if (this.isDeleting) {
+      return;
+    }
+
+    // flag true aslong as deletion is processed)
+    this.isDeleting = true;
+
+    let tmp = this.vMeters.splice(index, 1);
+
+    console.log(tmp);
 
     this.bwsService.delVirtualMeterById(id).subscribe({
       next: (response) => {
         if (response && response.hasOwnProperty('msg')) {
-          this.vMeters.push(tmp_vMeter[0]);
-          alert("Virtual Meter with Name " + id + " not found!");
+          this.vMeters.push(tmp[0]);
+          alert("Virtual Meter with Name " + id + " not found and can not be deleted!");
         }
       },
       error: (error) => {
         console.log(error);
       },
+      complete: () => {
+        this.isDeleting = false;
+      }
     })
   }
 
