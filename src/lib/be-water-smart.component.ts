@@ -1,6 +1,6 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { BeWaterSmartService } from "./be-water-smart.service";
-import { Chart, ChartType, ChartConfiguration } from "chart.js";
+import { Chart, ChartType, ChartConfiguration, ChartDataset, ChartData } from "chart.js";
 import { Observable } from "rxjs";
 import {
   Algorithm,
@@ -8,6 +8,9 @@ import {
   VirtualMeter,
   MLModel
 } from "./bws-interfaces";
+import { BaseChartDirective } from "ng2-charts";
+import { TransformStringPipe } from "common";
+import { DatePipe } from "@angular/common";
 
 
 
@@ -21,11 +24,10 @@ export class BeWaterSmartComponent implements OnInit {
 
   // ---------- StringFormatting ----------
 
-
   /**
    * array of prefixes to remove from id-strings of smart meters
    */
-  prefixes: string[] = ["urn:ngsi-ld:virtualMeter:", "urn:ngsi-ld:Device:"]
+  prefixes: string[] = ["urn:ngsi-ld:virtualMeter:", "urn:ngsi-ld:Device:"];
 
   // ---------- Layout Parameters ----------
 
@@ -61,47 +63,52 @@ export class BeWaterSmartComponent implements OnInit {
 
   // ------------------------------ Chart Parameters --------------------------------------------
 
-  // standard times of a day, used for x axis
-  standardTimes: string[] = ['01:00:00', '02:00:00', '03:00:00',
-    '04:00:00', '05:00:00', '06:00:00', '07:00:00',
-    '08:00:00', '09:00:00', '10:00:00', '11:00:00',
-    '12:00:00', '13:00:00', '14:00:00', '15:00:00',
-    '16:00:00', '17:00:00', '18:00:00', '19:00:00',
-    '20:00:00', '21:00:00', '22:00:00', '23:00:00']
+  /**
+   * The chart object, referenced from the html template
+   */
+  @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
-  // type of chart
+  /**
+   * type of graph to use in chart
+   */
   chartType: ChartType = 'line';
 
-  // datasets and labels to draw the chart
-  chartData: ChartConfiguration['data'] = {
-    labels: this.standardTimes,
-    datasets: [
-      {
-        data: [],
-        label: ""
-      },
-    ]
-  }
-
-  // further options to specify in the chart
+  /**
+   * options used for the line chart to visualize prediction values
+   */
   chartOptions: ChartConfiguration['options'] = {
     responsive: true,
     scales: {
       y: {
-        stacked: true,
+        stacked: false,
         title: {
           display: true,
           text: "m^3"
         }
       },
       x: {
-        stacked: true,
+        stacked: false,
         title: {
           display: true,
           text: "Time"
         }
       }
     },
+  };
+
+  /**
+   * standard xAxis labels for prediction values
+   */
+  standardLabels: string[] = ['01:00:00', '02:00:00', '03:00:00',
+    '04:00:00', '05:00:00', '06:00:00', '07:00:00',
+    '08:00:00', '09:00:00', '10:00:00', '11:00:00',
+    '12:00:00', '13:00:00', '14:00:00', '15:00:00',
+    '16:00:00', '17:00:00', '18:00:00', '19:00:00',
+    '20:00:00', '21:00:00', '22:00:00', '23:00:00']
+
+  chartData: ChartData<'line'> = {
+    labels: this.standardLabels, // X-axis labels
+    datasets: [], // data points
   };
 
   // ---------- Physical Meter Parameters ----------
@@ -286,10 +293,10 @@ export class BeWaterSmartComponent implements OnInit {
     this.bwsService.addVirtualMeterWithId(this.newVMeterName, this.createSubMeterList(selectedMeters)).subscribe({
       next: (response) => {
         if (response.hasOwnProperty("virtualMeterId")) {
+          this.extractVMeters();
           this.selectedPhysicalMeters = [];
           this.selectedVirtualMeters = [];
           this.newVMeterName = undefined;
-          this.extractVMeters();
         }
       },
       error: (error) => {
@@ -388,19 +395,27 @@ export class BeWaterSmartComponent implements OnInit {
    * @param index place in list to correctly remove model afterwards
    */
   deleteModel(vMeterId: string, algId: string, index: number): void {
+    if (this.isDeleting) {
+      return;
+    }
+
+    this.isDeleting = true;
+
+    let tmp = this.models.splice(index, 1);
 
     this.bwsService.delModel(vMeterId, algId).subscribe({
       next: (response) => {
         if (response && response.hasOwnProperty('message')) {
-          alert("Model to delete not found");
-        } else {
-          this.models.splice(index, 1);
-          alert("Model deleted!");
+          this.models.push(tmp[0]);
+          alert("Model not found");
         }
       },
       error: (error) => {
         console.log(error);
       },
+      complete: () => {
+        this.isDeleting = false;
+      }
     })
   }
 
@@ -430,29 +445,83 @@ export class BeWaterSmartComponent implements OnInit {
 
           let date = response[0].datePredicted;
 
-          let label = vMeterId + algId + " " + date
+          let label = this.transformString(vMeterId, this.prefixes[0]) + " " + algId + " " + this.transformDate(date)
 
-          this.updateGraph(predValues, label)
-
+          this.addGraphToChart(predValues, label)
         }
       },
       error: (error) => {
         console.log(error);
       },
+      complete: () => {
+        this.selectedModel = undefined;
+      }
     })
   }
 
-  updateGraph(prediction_values: number[], new_label: string): void {
+  /**
+   * Function to add new lines dynamically to the graph
+   * @param label new data label
+   * @param dataPoints the new prediction values
+   * @param borderColor color to use
+   */
+  addGraphToChart(dataPoints: number[], label: string): void {
+    // Create a new dataset
+    const newDataset: ChartDataset<'line'> = {
+      label: label,
+      data: dataPoints,
+      borderColor: this.generateRandomColor(),
+      fill: false,
+    };
 
-    this.chartData = {
-      datasets: [
-        { data: prediction_values, label: new_label }
-      ]
+    // Add the new dataset to the existing chart data
+    this.chartData.datasets.push(newDataset);
+
+    // Update the chart to reflect the changes
+    if (this.chart) {
+      this.chart.update();
     }
+  }
 
+  /**
+   * generate a random color from the color wheel
+   * @returns random color code as string
+   */
+  generateRandomColor(): string {
+    const r = Math.floor(Math.random() * 256); // Random red value (0-255)
+    const g = Math.floor(Math.random() * 256); // Random green value (0-255)
+    const b = Math.floor(Math.random() * 256); // Random blue value (0-255)
+
+    return `rgb(${r}, ${g}, ${b})`; // Return the color in rgb() format
   }
 
   // ---------- Utility Functions ----------
+
+  /**
+   * pipe implementation to clean the ids from the smart meters
+   * @param value the whole string to change
+   * @param removable the string to remove
+   * @returns the tidied up string
+   */
+  transformString(value: string, removable: string): string {
+    let t = new TransformStringPipe();
+    return t.transform(value, removable)
+  }
+
+  /**
+   * pipe implementation to clean a date to readable format
+   * @param date initial date
+   * @param format format to use
+   * @returns the new date as a string
+   */
+  transformDate(date: string): string {
+
+    const datePipe = new DatePipe('en-US');
+
+    const formattedDate = datePipe.transform(date, 'dd.MM.yyyy HH:mm:ss');
+
+    return formattedDate || date;
+  }
 
   /**
    * calculates the table height dependend on the box height
