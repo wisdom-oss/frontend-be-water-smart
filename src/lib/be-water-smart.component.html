@@ -5,7 +5,8 @@
     <div class="column is-two-fifths">
         <div class="box" [style]="{ height: heightModel }">
             <h1 class="title has-text-centered is-size-3">Predicted Water Consumption</h1>
-            <canvas baseChart [data]="chartData" [options]="chartOptions" [type]="chartType"> </canvas>
+            <canvas baseChart [data]="chartData" [options]="chartOptions" [type]="chartType" [plugins]="chartPlugins">
+            </canvas>
             <div class="has-text-centered mt-5">
                 <button class="button is-primary" (click)="getForecast()">Create Forecast</button>
             </div>

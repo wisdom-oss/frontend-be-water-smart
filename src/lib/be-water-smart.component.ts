@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { BeWaterSmartService } from "./be-water-smart.service";
-import { Chart, ChartType, ChartConfiguration, ChartDataset, ChartData } from "chart.js";
+import { ChartType, ChartConfiguration, ChartDataset, ChartData, Plugin } from "chart.js";
 import { Observable } from "rxjs";
 import {
   Algorithm,
@@ -44,7 +44,7 @@ export class BeWaterSmartComponent implements OnInit {
   /**
    * height of training algorithm box
    */
-  heightAlg: string = "25vh";
+  heightAlg: string = "30vh";
 
   /**
    * box height virtual meter display, 
@@ -94,22 +94,44 @@ export class BeWaterSmartComponent implements OnInit {
         }
       }
     },
+
   };
 
   /**
    * standard xAxis labels for prediction values
    */
-  standardLabels: string[] = ['01:00:00', '02:00:00', '03:00:00',
-    '04:00:00', '05:00:00', '06:00:00', '07:00:00',
-    '08:00:00', '09:00:00', '10:00:00', '11:00:00',
-    '12:00:00', '13:00:00', '14:00:00', '15:00:00',
-    '16:00:00', '17:00:00', '18:00:00', '19:00:00',
-    '20:00:00', '21:00:00', '22:00:00', '23:00:00']
+  standardLabels: string[] = ['01:00', '02:00', '03:00',
+    '04:00', '05:00', '06:00', '07:00',
+    '08:00', '09:00', '10:00', '11:00',
+    '12:00', '13:00', '14:00', '15:00',
+    '16:00', '17:00', '18:00', '19:00',
+    '20:00', '21:00', '22:00', '23:00']
 
+  /**
+   * color of the ng2chart
+   */
+  chartColor: string = '#ADD8E6';
+
+  /**
+   * data skeleton for the line graph
+   */
   chartData: ChartData<'line'> = {
     labels: this.standardLabels, // X-axis labels
     datasets: [], // data points
   };
+
+  backgroundPlugin: Plugin<'bar'> = {
+    id: 'custom_canvas_background_color',
+    beforeDraw: (chart) => {
+      const ctx = chart.ctx;
+      ctx.save();
+      ctx.fillStyle = this.chartColor; // Set the background color to white
+      ctx.fillRect(0, 0, chart.width, chart.height);
+      ctx.restore();
+    }
+  };
+
+  chartPlugins = [this.backgroundPlugin];
 
   // ---------- Physical Meter Parameters ----------
 
@@ -518,7 +540,7 @@ export class BeWaterSmartComponent implements OnInit {
 
     const datePipe = new DatePipe('en-US');
 
-    const formattedDate = datePipe.transform(date, 'dd.MM.yyyy HH:mm:ss');
+    const formattedDate = datePipe.transform(date, 'dd.MM.yyyy');
 
     return formattedDate || date;
   }
