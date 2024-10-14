@@ -4,7 +4,7 @@
     <!--Graph Field-->
     <div class="column is-two-fifths">
         <div class="box" [style]="{ height: heightModel }">
-            <h1 class="title has-text-centered is-size-3">Predicted Water Consumption</h1>
+            <h1 class="title has-text-centered is-size-3">{{ "be-water-smart.titles.chart" | translate }}</h1>
             <canvas baseChart [data]="chartData" [options]="chartOptions" [type]="chartType" [plugins]="chartPlugins">
             </canvas>
             <div class="has-text-centered mt-5">
