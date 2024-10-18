@@ -2,9 +2,13 @@
  * Public API Surface of be-water-smart
  */
 
-import {WisdomInterface} from "common";
+import { WisdomInterface } from "common";
 
-import {BeWaterSmartComponent} from "./lib/be-water-smart.component";
+import de_DE from "./lib/i18n/de_DE";
+import en_US from "./lib/i18n/en_US";
+
+
+import { BeWaterSmartComponent } from "./lib/be-water-smart.component";
 
 export const wisdomInterface: WisdomInterface = {
   route: {
@@ -13,8 +17,8 @@ export const wisdomInterface: WisdomInterface = {
   },
   scopes: [],
   translations: {
-    de_DE: {},
-    en_US: {},
+    de_DE,
+    en_US,
   },
 };
 

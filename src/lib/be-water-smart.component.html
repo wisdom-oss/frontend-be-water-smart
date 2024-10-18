@@ -8,7 +8,9 @@
             <canvas baseChart [data]="chartData" [options]="chartOptions" [type]="chartType" [plugins]="chartPlugins">
             </canvas>
             <div class="has-text-centered mt-5">
-                <button class="button is-primary" (click)="getForecast()">Create Forecast</button>
+                <button class="button is-primary" (click)="getForecast()">
+                    {{ "be-water-smart.buttons.forecast" | translate }}
+                </button>
             </div>
         </div>
     </div>
@@ -20,7 +22,7 @@
                 height: heightModel
             }"
         >
-            <h1 class="title has-text-centered is-size-3">Model Selection for Prediction</h1>
+            <h1 class="title has-text-centered is-size-3">{{ "be-water-smart.titles.model_select" | translate }}</h1>
             <div class="table-container" [style]="{ overflow: models ? 'auto' : 'hidden' }">
                 <table class="table is-hoverable is-fullwidth">
                     <thead class="has-background-dark has-text-white">
@@ -38,7 +40,7 @@
                     </thead>
                     <tbody>
                         <tr *ngIf="models.length === 0">
-                            <td colspan="9" class="has-text-centered">No data available</td>
+                            <td colspan="9" class="has-text-centered">{{ "be-water-smart.no_data.a" | translate }}</td>
                         </tr>
                         <tr *ngFor="let item of models; let i = index">
                             <td class="is-narrow">
@@ -91,7 +93,7 @@
                                     class="button is-danger is-small"
                                     (click)="deleteModel(item.refMeter, item.algorithm, i)"
                                 >
-                                    Delete
+                                    {{ "be-water-smart.buttons.delete" | translate }}
                                 </button>
                             </td>
                         </tr>
@@ -104,11 +106,13 @@
 
 <!-- Train Model Field -->
 <div class="box has-text-centered" [style]="{ height: heightAlg, width: '100%' }">
-    <h1 class="title has-text-centered is-size-3">Model Training</h1>
+    <h1 class="title has-text-centered is-size-3">{{ "be-water-smart.titles.model_train" | translate }}</h1>
     <div class="field is-grouped is-justify-content-center">
         <!-- Choose Algorithm -->
         <div class="control" [style]="{ width: '15%' }">
-            <label class="label" for="algorithmSelect">Algorithm</label>
+            <label class="label" for="algorithmSelect">{{
+                "be-water-smart.modell_training.algorithm" | translate
+            }}</label>
             <div class="select is-fullwidth">
                 <select id="algorithmSelect" [(ngModel)]="selectedAlgorithm">
                     <option *ngFor="let item of algorithms" [ngValue]="item" [title]="item.description">
@@ -119,7 +123,9 @@
         </div>
         <!-- Choose Virtual Meter -->
         <div class="control" [style]="{ width: '15%' }">
-            <label class="label" for="virtualMeterSelect">Virtual Meter</label>
+            <label class="label" for="virtualMeterSelect">{{
+                "be-water-smart.modell_training.virtual_meter" | translate
+            }}</label>
             <div class="select is-fullwidth">
                 <select id="virtualMeterSelect" [(ngModel)]="selectedVirtualMeter">
                     <option *ngFor="let item of vMeters" [ngValue]="item" [title]="item.description">
@@ -130,7 +136,7 @@
         </div>
         <!-- Create a Comment -->
         <div class="control" [style]="{ width: '15%' }">
-            <label class="label" for="commentSelect">Comment</label>
+            <label class="label" for="commentSelect">{{ "be-water-smart.modell_training.comment" | translate }}</label>
             <input
                 type="text"
                 class="input is-fullwidth"
@@ -141,14 +147,16 @@
         </div>
     </div>
     <!-- Training Button -->
-    <button class="button is-primary mt-3 mb-3" (click)="trainModel()">Train Model</button>
+    <button class="button is-primary mt-3 mb-3" (click)="trainModel()">
+        {{ "be-water-smart.buttons.model_train" | translate }}
+    </button>
 </div>
 
 <div class="columns">
     <!-- Physical Meter Field-->
     <div class="column is-half">
         <div class="box" [style]="{ height: heightPM }">
-            <h1 class="title is-size-3 has-text-centered">Smart Meter List</h1>
+            <h1 class="title is-size-3 has-text-centered">{{ "be-water-smart.titles.smart_meter" | translate }}</h1>
             <div
                 class="table-container"
                 [style]="{
@@ -160,15 +168,15 @@
                     <thead class="has-background-dark has-text-white">
                         <tr>
                             <th class="has-text-centered"></th>
-                            <th class="has-text-centered">Name</th>
-                            <th class="has-text-centered">Date</th>
-                            <th class="has-text-centered">Locality</th>
-                            <th class="has-text-centered">Address</th>
+                            <th class="has-text-centered">{{ "be-water-smart.tables.name" | translate }}</th>
+                            <th class="has-text-centered">{{ "be-water-smart.tables.date" | translate }}</th>
+                            <th class="has-text-centered">{{ "be-water-smart.tables.locality" | translate }}</th>
+                            <th class="has-text-centered">{{ "be-water-smart.tables.address" | translate }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngIf="pMeters.length === 0">
-                            <td colspan="5" class="has-text-centered">No data available</td>
+                            <td colspan="5" class="has-text-centered">{{ "be-water-smart.no_data.a" | translate }}</td>
                         </tr>
                         <tr *ngFor="let item of pMeters; let i = index">
                             <td class="is-narrow">
@@ -220,7 +228,9 @@
                         (click)="addVMeter(this.selectedPhysicalMeters)"
                         [disabled]="!selectedPhysicalMeters.length"
                     >
-                        <abbr title="Tick at least one Smart Meter to continue"> Add </abbr>
+                        <abbr title="Tick at least one Smart Meter to continue">
+                            {{ "be-water-smart.buttons.add" | translate }}
+                        </abbr>
                     </button>
                 </div>
             </div>
@@ -230,7 +240,7 @@
     <!-- Virtual Meter Field-->
     <div class="column is-half">
         <div class="box" [style]="{ height: heightVM }">
-            <h1 class="title has-text-centered is-size-3">Virtual Meter List</h1>
+            <h1 class="title has-text-centered is-size-3">{{ "be-water-smart.titles.virtual_meter" | translate }}</h1>
             <!-- Table to show all VirtualMeters -->
             <div
                 class="table-container"
@@ -243,16 +253,16 @@
                     <thead class="has-background-dark has-text-white">
                         <tr>
                             <th class="has-text-centered"></th>
-                            <th class="has-text-centered">Name</th>
-                            <th class="has-text-centered">Date</th>
-                            <th class="has-text-centered">SubMeters</th>
-                            <th class="has-text-centered">SuperMeters</th>
+                            <th class="has-text-centered">{{ "be-water-smart.tables.name" | translate }}</th>
+                            <th class="has-text-centered">{{ "be-water-smart.tables.date" | translate }}</th>
+                            <th class="has-text-centered">{{ "be-water-smart.tables.submeters" | translate }}</th>
+                            <th class="has-text-centered">{{ "be-water-smart.tables.supermeters" | translate }}</th>
                             <th class="has-text-centered"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngIf="vMeters.length === 0">
-                            <td colspan="6" class="has-text-centered">No data available</td>
+                            <td colspan="6" class="has-text-centered">{{ "be-water-smart.no_data.a" | translate }}</td>
                         </tr>
                         <tr *ngFor="let item of vMeters; let i = index">
                             <td class="is-narrow">
@@ -286,7 +296,7 @@
                             </td>
                             <td class="is-narrow has-text-centered">
                                 <button class="button is-danger is-small" (click)="deleteVMeterById(item.id, i)">
-                                    Delete
+                                    {{ "be-water-smart.buttons.delete" | translate }}
                                 </button>
                             </td>
                         </tr>
@@ -304,7 +314,9 @@
                         (click)="addVMeter(selectedVirtualMeters)"
                         [disabled]="!selectedVirtualMeters.length"
                     >
-                        <abbr title="Tick at least one Virtual Meter to continue"> Add </abbr>
+                        <abbr title="Tick at least one Virtual Meter to continue">
+                            {{ "be-water-smart.buttons.add" | translate }}
+                        </abbr>
                     </button>
                 </div>
             </div>

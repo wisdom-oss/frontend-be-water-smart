@@ -11,6 +11,7 @@ import {
 import { BaseChartDirective } from "ng2-charts";
 import { TransformStringPipe } from "common";
 import { DatePipe } from "@angular/common";
+import { TranslateService } from "@ngx-translate/core";
 
 
 
@@ -200,7 +201,7 @@ export class BeWaterSmartComponent implements OnInit {
    */
   isDeleting: boolean = false;
 
-  constructor(public bwsService: BeWaterSmartService) { }
+  constructor(public bwsService: BeWaterSmartService, private translate: TranslateService) { }
 
   ngOnInit(): void {
     // initialize all displays when rendering web page
@@ -208,6 +209,7 @@ export class BeWaterSmartComponent implements OnInit {
     this.extractVMeters();
     this.extractAlgorithms();
     this.extractModels();
+
   }
 
   // ---------- Extracting Functions ----------
