@@ -111,7 +111,7 @@ export class BeWaterSmartComponent implements OnInit {
   /**
    * color of the ng2chart
    */
-  chartColor: string = '#ADD8E6';
+  chartColor: string = '#FFFFFF';
 
   /**
    * data skeleton for the line graph
@@ -166,7 +166,12 @@ export class BeWaterSmartComponent implements OnInit {
   /**
    * name of potential new virtual meter
    */
-  newVMeterName: string | undefined;
+  newVMeterName: string = "";
+
+  /**
+   * name of potential new virtual meter created from other virtual meters
+   */
+  newSuperMeterName: string = "";
 
   // ---------- Algorithm Parameters ----------
 
@@ -307,20 +312,21 @@ export class BeWaterSmartComponent implements OnInit {
    * If successful, user gets informed and all global variables get set back.
    * If failed, user gets informed
    */
-  addVMeter(selectedMeters: any): void {
+  addVMeter(selectedMeters: any, selectedMeter: string): void {
 
-    if (!this.newVMeterName) {
+    if (!selectedMeter) {
       alert("No Name for Virtual Meter!");
       return;
     }
 
-    this.bwsService.addVirtualMeterWithId(this.newVMeterName, this.createSubMeterList(selectedMeters)).subscribe({
+    this.bwsService.addVirtualMeterWithId(selectedMeter, this.createSubMeterList(selectedMeters)).subscribe({
       next: (response) => {
         if (response.hasOwnProperty("virtualMeterId")) {
           this.extractVMeters();
           this.selectedPhysicalMeters = [];
           this.selectedVirtualMeters = [];
-          this.newVMeterName = undefined;
+          this.newVMeterName = "";
+          this.newSuperMeterName = "";
         }
       },
       error: (error) => {

@@ -225,8 +225,8 @@
                 <div class="control">
                     <button
                         class="button is-success"
-                        (click)="addVMeter(this.selectedPhysicalMeters)"
                         [disabled]="!selectedPhysicalMeters.length"
+                        (click)="addVMeter(this.selectedPhysicalMeters, this.newVMeterName)"
                     >
                         <abbr title="Tick at least one Smart Meter to continue">
                             {{ "be-water-smart.buttons.add" | translate }}
@@ -306,13 +306,18 @@
             <!--Form Field for adding Virtual Meter-->
             <div class="field is-grouped is-grouped-centered">
                 <div class="control">
-                    <input class="input" type="text" [(ngModel)]="newVMeterName" placeholder="Enter Super Meter Name" />
+                    <input
+                        class="input"
+                        type="text"
+                        [(ngModel)]="newSuperMeterName"
+                        placeholder="Enter Super Meter Name"
+                    />
                 </div>
                 <div class="control">
                     <button
                         class="button is-success"
-                        (click)="addVMeter(selectedVirtualMeters)"
                         [disabled]="!selectedVirtualMeters.length"
+                        (click)="addVMeter(this.selectedVirtualMeters, this.newSuperMeterName)"
                     >
                         <abbr title="Tick at least one Virtual Meter to continue">
                             {{ "be-water-smart.buttons.add" | translate }}
