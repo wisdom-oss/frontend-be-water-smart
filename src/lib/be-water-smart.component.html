@@ -3,11 +3,13 @@
 <div class="columns">
     <!--Graph Field-->
     <div class="column is-two-fifths">
-        <div class="box" [style]="{ height: heightModel }">
+        <div class="box is-flex is-flex-direction-column" [style]="{ height: heightModel }">
             <h1 class="title has-text-centered is-size-3">{{ "be-water-smart.titles.chart" | translate }}</h1>
             <canvas baseChart [data]="chartData" [options]="chartOptions" [type]="chartType" [plugins]="chartPlugins">
             </canvas>
-            <div class="has-text-centered mt-5">
+            <!-- dummy div to grow the box-->
+            <div class="is-flex-grow-1"></div>
+            <div class="has-text-centered">
                 <button class="button is-primary" (click)="getForecast()">
                     {{ "be-water-smart.buttons.forecast" | translate }}
                 </button>
@@ -105,7 +107,7 @@
 </div>
 
 <!-- Train Model Field -->
-<div class="box has-text-centered" [style]="{ height: heightAlg, width: '100%' }">
+<div class="box has-text-centered is-flex is-flex-direction-column" [style]="{ height: heightAlg, width: '100%' }">
     <h1 class="title has-text-centered is-size-3">{{ "be-water-smart.titles.model_train" | translate }}</h1>
     <div class="field is-grouped is-justify-content-center">
         <!-- Choose Algorithm -->
@@ -146,10 +148,14 @@
             />
         </div>
     </div>
+    <!-- dummy div to grow the box-->
+    <div class="is-flex-grow-1"></div>
     <!-- Training Button -->
-    <button class="button is-primary mt-3 mb-3" (click)="trainModel()">
-        {{ "be-water-smart.buttons.model_train" | translate }}
-    </button>
+    <div>
+        <button class="button is-primary" (click)="trainModel()">
+            {{ "be-water-smart.buttons.model_train" | translate }}
+        </button>
+    </div>
 </div>
 
 <div class="columns">
@@ -224,7 +230,7 @@
                 </div>
                 <div class="control">
                     <button
-                        class="button is-success"
+                        class="button is-primary"
                         [disabled]="!selectedPhysicalMeters.length"
                         (click)="addVMeter(this.selectedPhysicalMeters, this.newVMeterName)"
                     >
@@ -315,7 +321,7 @@
                 </div>
                 <div class="control">
                     <button
-                        class="button is-success"
+                        class="button is-primary"
                         [disabled]="!selectedVirtualMeters.length"
                         (click)="addVMeter(this.selectedVirtualMeters, this.newSuperMeterName)"
                     >

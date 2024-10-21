@@ -1,19 +1,14 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { BeWaterSmartService } from "./be-water-smart.service";
-import { ChartType, ChartConfiguration, ChartDataset, ChartData, Plugin } from "chart.js";
-import { Observable } from "rxjs";
-import {
-  Algorithm,
-  PhysicalMeter,
-  VirtualMeter,
-  MLModel
-} from "./bws-interfaces";
-import { BaseChartDirective } from "ng2-charts";
-import { TransformStringPipe } from "common";
 import { DatePipe } from "@angular/common";
 import { TranslateService } from "@ngx-translate/core";
 
+import { ChartType, ChartConfiguration, ChartDataset, ChartData, Plugin } from "chart.js";
+import { BaseChartDirective } from "ng2-charts";
+import { Observable } from "rxjs";
 
+import { BeWaterSmartService } from "./be-water-smart.service";
+import { Algorithm, PhysicalMeter, VirtualMeter, MLModel } from "./bws-interfaces";
+import { TransformStringPipe } from "common";
 
 @Component({
   selector: 'lib-be-water-smart',
@@ -40,26 +35,26 @@ export class BeWaterSmartComponent implements OnInit {
   /**
    * height of model selection box
    */
-  heightModel: string = "50vh";
+  heightModel: string = "45vh";
 
   /**
    * height of training algorithm box
    */
-  heightAlg: string = "30vh";
+  heightAlg: string = "25vh";
 
   /**
    * box height virtual meter display, 
    * table height in relation
    */
-  heightVM: string = "50vh";
-  heightVMTable: string = this.calcRelBoxHeight(this.heightVM, 0.65); //0.65
+  heightVM: string = "45vh";
+  heightVMTable: string = this.calcRelBoxHeight(this.heightVM, 0.6); //0.65
 
   /**
    * box height physical meter display, 
    * table height in relation
    */
-  heightPM: string = "50vh";
-  heightPMTable: string = this.calcRelBoxHeight(this.heightPM, 0.65); // 0.65
+  heightPM: string = "45vh";
+  heightPMTable: string = this.calcRelBoxHeight(this.heightPM, 0.6); // 0.65
 
 
   // ------------------------------ Chart Parameters --------------------------------------------
@@ -85,14 +80,23 @@ export class BeWaterSmartComponent implements OnInit {
         title: {
           display: true,
           text: "m^3"
-        }
+        },
+        grid: {
+          display: true, // Show grid lines on the y-axis
+          color: '#e0e0e0', // Customize the grid line color
+          lineWidth: 0.2, // Set the width of the grid lines
+        },
       },
       x: {
-        stacked: false,
         title: {
           display: true,
           text: "Time"
-        }
+        },
+        grid: {
+          display: false, // Show grid lines on the y-axis
+          color: '#e0e0e0', // Customize the grid line color
+          lineWidth: 0.2, // Set the width of the grid lines
+        },
       }
     },
 
@@ -111,7 +115,7 @@ export class BeWaterSmartComponent implements OnInit {
   /**
    * color of the ng2chart
    */
-  chartColor: string = '#FFFFFF';
+  chartColor: string = '#000000';
 
   /**
    * data skeleton for the line graph
@@ -131,6 +135,7 @@ export class BeWaterSmartComponent implements OnInit {
       ctx.restore();
     }
   };
+
 
   chartPlugins = [this.backgroundPlugin];
 
