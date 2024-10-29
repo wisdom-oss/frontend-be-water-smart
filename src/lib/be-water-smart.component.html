@@ -21,7 +21,8 @@
         <div
             class="box"
             [style]="{
-                height: heightModel
+                height: heightModel,
+                'overflow-y': 'auto'
             }"
         >
             <h1 class="title has-text-centered is-size-3">{{ "be-water-smart.titles.model_select" | translate }}</h1>
@@ -57,7 +58,7 @@
                             </td>
                             <td class="is-narrow has-text-centered">
                                 <abbr title="{{ item.algorithm }}">
-                                    {{ item.algorithm.slice(0, slice) }}
+                                    {{ item.algorithm.slice(0, 7) }}
                                 </abbr>
                             </td>
                             <td class="has-text-centered">
