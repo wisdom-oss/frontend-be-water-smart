@@ -14,9 +14,16 @@ import {
 } from "./bws-interfaces";
 
 /**
- * constant holding the api prefix to reach the bws api
+ * constant holding the api prefix to reach
+ * the bws api
  */
 const API_PREFIX = "bws";
+
+/**
+ * constant holding the dev prefix to reach
+ * the bws api locally in python (localhost:5000)
+ */
+const DEV_PREFIX = "localpy"
 
 @Injectable({
   providedIn: 'root'
@@ -35,7 +42,15 @@ export class BeWaterSmartService {
    */
   sendRequest<T>(method: 'get' | 'post' | 'put' | 'delete', url: string, loader: boolean, requestBody?: any) {
 
-    let finalUrl = this.router.parseUrl(API_PREFIX + url);
+    /**
+     * dev prefix to reach python local api
+     */
+    const localUrl = this.router.parseUrl(DEV_PREFIX + '/' + API_PREFIX + url).toString();
+
+    /**
+     * normal URL for server
+     */
+    const normalURL = this.router.parseUrl(API_PREFIX + url).toString();
 
     let ctx: HttpContext = new HttpContext()
       .set(USE_API_URL, true)
@@ -48,7 +63,7 @@ export class BeWaterSmartService {
       body: requestBody
     };
 
-    return this.http.request<T>(method, finalUrl.toString(), requestOptions) as Observable<T>;
+    return this.http.request<T>(method, localUrl, requestOptions) as Observable<T>;
   }
 
   /**
