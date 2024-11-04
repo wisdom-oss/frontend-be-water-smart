@@ -9,9 +9,7 @@ export default {
         },
         buttons: {
             forecast: "Mache Vorhersage",
-            delete: "Löschen",
             model_train: "Trainiere Modell",
-            add: "Hinzufügen",
         },
         tables: {
             name: "Name",

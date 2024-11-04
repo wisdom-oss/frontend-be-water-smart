@@ -9,9 +9,7 @@ export default {
         },
         buttons: {
             forecast: "Create Forecast",
-            delete: "Delete",
             model_train: "Train Model",
-            add: "Add",
         },
         tables: {
             name: "Name",
