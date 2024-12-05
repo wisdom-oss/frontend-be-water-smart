@@ -63,7 +63,7 @@ export class BeWaterSmartService {
       body: requestBody
     };
 
-    return this.http.request<T>(method, localUrl, requestOptions) as Observable<T>;
+    return this.http.request<T>(method, normalURL, requestOptions) as Observable<T>;
   }
 
   /**
