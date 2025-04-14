@@ -1,24 +1,12 @@
-# BeWaterSmart
-
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.1.0.
-
-## Code scaffolding
-
-Run `ng generate component component-name --project be-water-smart` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project be-water-smart`.
-> Note: Don't forget to add `--project be-water-smart` or else it will be added to the default project in your `angular.json` file. 
-
-## Build
-
-Run `ng build be-water-smart` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Publishing
-
-After building your library with `ng build be-water-smart`, go to the dist folder `cd dist/be-water-smart` and run `npm publish`.
-
-## Running unit tests
-
-Run `ng test be-water-smart` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+> [!IMPORTANT]
+> ## 📦 Heads up: This repo is *archived*
+> This repo was part of our earlier multi-repo setup for the WISdoM platform. 
+> We're still modular in structure, but managing everything across multiple 
+> repos, even with [`meta`](https://www.npmjs.com/package/meta), was tough to 
+> keep in sync.
+>
+> We've since consolidated the frontend into a single monorepo, which has made 
+> things smoother, easier to maintain, and a lot faster to develop.
+>
+> Check out the [main `frontend` repo](https://github.com/wisdom-oss/frontend) 
+> for the latest code, features, and where all active development is happening.
